@@ -21,6 +21,7 @@
             min-height: 100vh;
             perspective: 1000px;
             overflow-x: hidden;
+            padding: 20px;
         }
 
         .book-container {
@@ -52,6 +53,7 @@
             border-radius: 5px;
             overflow: hidden;
             cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .front, .back {
@@ -61,10 +63,48 @@
             backface-visibility: hidden;
             background-size: cover;
             background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.9);
+            overflow-y: auto;
         }
 
         .back {
             transform: rotateY(180deg);
+        }
+
+        .page-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .page-image {
+            flex: 1;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin: 10px 0;
+            min-height: 200px;
+        }
+
+        .page-text {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            line-height: 1.5;
+            overflow-y: auto;
+            max-height: 50%;
         }
 
         /* Позиционирование страниц */
@@ -84,21 +124,35 @@
             transform: rotateY(-180deg);
         }
 
-        /* Тень для эффекта глубины */
-        .page::after {
-            content: '';
+        /* Кнопки навигации */
+        .navigation {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0);
-            transition: background 0.3s;
-            pointer-events: none;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
         }
 
-        .page:hover::after {
-            background: rgba(0, 0, 0, 0.05);
+        .nav-btn {
+            padding: 10px 20px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-btn:hover {
+            background-color: #3a5a8c;
+        }
+
+        .nav-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
 
         /* Адаптация для мобильных устройств */
@@ -111,12 +165,25 @@
             body {
                 perspective: 500px;
             }
+            
+            .page-text {
+                font-size: 16px;
+            }
         }
 
         @media (max-width: 480px) {
             .book-container {
                 width: 98vw;
                 height: 85vh;
+            }
+            
+            .page-text {
+                font-size: 14px;
+            }
+            
+            .nav-btn {
+                padding: 8px 16px;
+                font-size: 14px;
             }
         }
     </style>
@@ -126,92 +193,279 @@
         <div class="book">
             <!-- Обложка -->
             <div class="page" data-page="cover">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224535_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224535_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Заголовок книги</h2>
+                            <p>Это обложка нашей интерактивной книги. Нажмите на страницу или кнопку "Далее", чтобы начать чтение.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 1</h2>
+                            <p>Это содержимое первой страницы. Здесь может быть текст, изображения или другие элементы.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 1 -->
             <div class="page" data-page="1">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 1</h2>
+                            <p>Это содержимое первой страницы. Здесь может быть текст, изображения или другие элементы.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 2</h2>
+                            <p>Это содержимое второй страницы. Продолжение истории или новая информация.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 2 -->
             <div class="page" data-page="2">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 2</h2>
+                            <p>Это содержимое второй страницы. Продолжение истории или новая информация.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 3</h2>
+                            <p>Третья страница книги с интересным содержанием и иллюстрациями.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 3 -->
             <div class="page" data-page="3">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 3</h2>
+                            <p>Третья страница книги с интересным содержанием и иллюстрациями.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 4</h2>
+                            <p>Четвертая страница с продолжением повествования.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 4 -->
             <div class="page" data-page="4">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 4</h2>
+                            <p>Четвертая страница с продолжением повествования.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 5</h2>
+                            <p>Пятая страница книги. Сюжет развивается дальше.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 5 -->
             <div class="page" data-page="5">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 5</h2>
+                            <p>Пятая страница книги. Сюжет развивается дальше.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 6</h2>
+                            <p>Шестая страница с новыми событиями и открытиями.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 6 -->
             <div class="page" data-page="6">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 6</h2>
+                            <p>Шестая страница с новыми событиями и открытиями.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 7</h2>
+                            <p>Седьмая страница. История приближается к кульминации.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 7 -->
             <div class="page" data-page="7">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 7</h2>
+                            <p>Седьмая страница. История приближается к кульминации.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 8</h2>
+                            <p>Восьмая страница. Развязка близка.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 8 -->
             <div class="page" data-page="8">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 8</h2>
+                            <p>Восьмая страница. Развязка близка.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 9</h2>
+                            <p>Девятая страница. Финальные события истории.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Страница 9 -->
             <div class="page" data-page="9">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224523_Gallery.jpg');"></div>
+                <div class="front">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Страница 9</h2>
+                            <p>Девятая страница. Финальные события истории.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="page-content">
+                        <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224523_Gallery.jpg');"></div>
+                        <div class="page-text">
+                            <h2>Последняя страница</h2>
+                            <p>Конец книги. Надеемся, вам понравилось!</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+        
+        <!-- Кнопки навигации -->
+        <div class="navigation">
+            <button id="prev-btn" class="nav-btn" disabled>Назад</button>
+            <button id="next-btn" class="nav-btn">Далее</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const pages = document.querySelectorAll('.page');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
             let currentPage = 0;
+            const totalPages = pages.length;
             
-            // Функция для перелистывания страницы
-            function flipPage(pageIndex) {
-                if (pageIndex < currentPage) return; // Запрет перелистывания назад
-                
-                if (pageIndex < pages.length) {
-                    pages[pageIndex].classList.add('flipped');
-                    currentPage = pageIndex + 1;
+            // Функция для обновления состояния кнопок
+            function updateButtons() {
+                prevBtn.disabled = currentPage === 0;
+                nextBtn.disabled = currentPage === totalPages - 1;
+            }
+            
+            // Функция для перелистывания страницы вперед
+            function flipNext() {
+                if (currentPage < totalPages - 1) {
+                    pages[currentPage].classList.add('flipped');
+                    currentPage++;
+                    updateButtons();
                 }
             }
             
-            // Добавляем обработчики клика на каждую страницу
+            // Функция для перелистывания страницы назад
+            function flipPrev() {
+                if (currentPage > 0) {
+                    currentPage--;
+                    pages[currentPage].classList.remove('flipped');
+                    updateButtons();
+                }
+            }
+            
+            // Добавляем обработчики клика на каждую страницу (только для перелистывания вперед)
             pages.forEach((page, index) => {
                 page.addEventListener('click', function() {
                     if (index === currentPage) {
-                        flipPage(index);
+                        flipNext();
                     }
                 });
             });
             
-            // Автоматическое перелистывание для демонстрации
-            setTimeout(() => flipPage(0), 1000);
+            // Обработчики для кнопок
+            prevBtn.addEventListener('click', flipPrev);
+            nextBtn.addEventListener('click', flipNext);
+            
+            // Инициализация состояния кнопок
+            updateButtons();
         });
     </script>
 </body>
