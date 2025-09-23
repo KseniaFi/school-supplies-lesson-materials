@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Интерактивная книжка</title>
+    <title>Interactive Book</title>
     <style>
         * {
             margin: 0;
@@ -12,9 +12,8 @@
         }
 
         body {
-            background: url('Photos/IMG_20250923_225112_703.jpg') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            font-family: 'Georgia', serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -61,17 +60,16 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            background-size: cover;
-            background-position: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 30px;
             text-align: center;
             color: #333;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: #fff;
             overflow-y: auto;
+            border: 1px solid #ddd;
         }
 
         .back {
@@ -94,6 +92,7 @@
             background-position: center;
             margin: 10px 0;
             min-height: 200px;
+            max-height: 60%;
         }
 
         .page-text {
@@ -101,13 +100,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            line-height: 1.5;
+            font-size: 16px;
+            line-height: 1.6;
             overflow-y: auto;
-            max-height: 50%;
+            max-height: 40%;
+            padding: 10px;
         }
 
-        /* Позиционирование страниц */
+        /* Page positioning */
         .page[data-page="cover"] { z-index: 10; }
         .page[data-page="1"] { z-index: 9; }
         .page[data-page="2"] { z-index: 8; }
@@ -119,12 +119,12 @@
         .page[data-page="8"] { z-index: 2; }
         .page[data-page="9"] { z-index: 1; }
 
-        /* Состояние перевернутой страницы */
+        /* Flipped page state */
         .flipped {
             transform: rotateY(-180deg);
         }
 
-        /* Кнопки навигации */
+        /* Navigation buttons */
         .navigation {
             position: absolute;
             bottom: -60px;
@@ -136,7 +136,7 @@
         }
 
         .nav-btn {
-            padding: 10px 20px;
+            padding: 10px 25px;
             background-color: #4a6fa5;
             color: white;
             border: none;
@@ -144,6 +144,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
+            font-family: 'Georgia', serif;
         }
 
         .nav-btn:hover {
@@ -155,7 +156,7 @@
             cursor: not-allowed;
         }
 
-        /* Адаптация для мобильных устройств */
+        /* Mobile adaptation */
         @media (max-width: 768px) {
             .book-container {
                 width: 95vw;
@@ -167,7 +168,7 @@
             }
             
             .page-text {
-                font-size: 16px;
+                font-size: 14px;
             }
         }
 
@@ -178,7 +179,7 @@
             }
             
             .page-text {
-                font-size: 14px;
+                font-size: 13px;
             }
             
             .nav-btn {
@@ -191,14 +192,14 @@
 <body>
     <div class="book-container">
         <div class="book">
-            <!-- Обложка -->
+            <!-- Cover -->
             <div class="page" data-page="cover">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224535_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Заголовок книги</h2>
-                            <p>Это обложка нашей интерактивной книги. Нажмите на страницу или кнопку "Далее", чтобы начать чтение.</p>
+                            <h2>The Journey Begins</h2>
+                            <p>Welcome to this interactive book. Click on the page or the "Next" button to begin reading.</p>
                         </div>
                     </div>
                 </div>
@@ -206,21 +207,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 1</h2>
-                            <p>Это содержимое первой страницы. Здесь может быть текст, изображения или другие элементы.</p>
+                            <p>As the sun rose over the distant mountains, a new day began. The air was crisp and filled with the promise of adventure.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 1 -->
+            <!-- Page 1 -->
             <div class="page" data-page="1">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 1</h2>
-                            <p>Это содержимое первой страницы. Здесь может быть текст, изображения или другие элементы.</p>
+                            <p>As the sun rose over the distant mountains, a new day began. The air was crisp and filled with the promise of adventure.</p>
                         </div>
                     </div>
                 </div>
@@ -228,21 +227,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 2</h2>
-                            <p>Это содержимое второй страницы. Продолжение истории или новая информация.</p>
+                            <p>In a small village nestled in the valley, people were beginning their daily routines. Children laughed as they played in the streets.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 2 -->
+            <!-- Page 2 -->
             <div class="page" data-page="2">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 2</h2>
-                            <p>Это содержимое второй страницы. Продолжение истории или новая информация.</p>
+                            <p>In a small village nestled in the valley, people were beginning their daily routines. Children laughed as they played in the streets.</p>
                         </div>
                     </div>
                 </div>
@@ -250,21 +247,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 3</h2>
-                            <p>Третья страница книги с интересным содержанием и иллюстрациями.</p>
+                            <p>At the edge of the village stood an ancient oak tree, its branches reaching toward the sky like gnarled fingers.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 3 -->
+            <!-- Page 3 -->
             <div class="page" data-page="3">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 3</h2>
-                            <p>Третья страница книги с интересным содержанием и иллюстрациями.</p>
+                            <p>At the edge of the village stood an ancient oak tree, its branches reaching toward the sky like gnarled fingers.</p>
                         </div>
                     </div>
                 </div>
@@ -272,21 +267,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 4</h2>
-                            <p>Четвертая страница с продолжением повествования.</p>
+                            <p>Legend told of a hidden treasure buried deep within the forest, protected by magical creatures and ancient spells.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 4 -->
+            <!-- Page 4 -->
             <div class="page" data-page="4">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 4</h2>
-                            <p>Четвертая страница с продолжением повествования.</p>
+                            <p>Legend told of a hidden treasure buried deep within the forest, protected by magical creatures and ancient spells.</p>
                         </div>
                     </div>
                 </div>
@@ -294,21 +287,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 5</h2>
-                            <p>Пятая страница книги. Сюжет развивается дальше.</p>
+                            <p>Many had tried to find the treasure, but none had returned. Some said they were lost forever in the enchanted woods.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 5 -->
+            <!-- Page 5 -->
             <div class="page" data-page="5">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 5</h2>
-                            <p>Пятая страница книги. Сюжет развивается дальше.</p>
+                            <p>Many had tried to find the treasure, but none had returned. Some said they were lost forever in the enchanted woods.</p>
                         </div>
                     </div>
                 </div>
@@ -316,21 +307,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 6</h2>
-                            <p>Шестая страница с новыми событиями и открытиями.</p>
+                            <p>One day, a young adventurer named Elara decided to attempt the journey. She packed her bag with provisions and set off at dawn.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 6 -->
+            <!-- Page 6 -->
             <div class="page" data-page="6">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 6</h2>
-                            <p>Шестая страница с новыми событиями и открытиями.</p>
+                            <p>One day, a young adventurer named Elara decided to attempt the journey. She packed her bag with provisions and set off at dawn.</p>
                         </div>
                     </div>
                 </div>
@@ -338,21 +327,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 7</h2>
-                            <p>Седьмая страница. История приближается к кульминации.</p>
+                            <p>The forest was darker and more mysterious than she had imagined. Strange sounds echoed through the trees.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 7 -->
+            <!-- Page 7 -->
             <div class="page" data-page="7">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 7</h2>
-                            <p>Седьмая страница. История приближается к кульминации.</p>
+                            <p>The forest was darker and more mysterious than she had imagined. Strange sounds echoed through the trees.</p>
                         </div>
                     </div>
                 </div>
@@ -360,21 +347,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 8</h2>
-                            <p>Восьмая страница. Развязка близка.</p>
+                            <p>After hours of walking, Elara came across a clearing where a small cottage stood. Smoke curled from its chimney.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 8 -->
+            <!-- Page 8 -->
             <div class="page" data-page="8">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 8</h2>
-                            <p>Восьмая страница. Развязка близка.</p>
+                            <p>After hours of walking, Elara came across a clearing where a small cottage stood. Smoke curled from its chimney.</p>
                         </div>
                     </div>
                 </div>
@@ -382,21 +367,19 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 9</h2>
-                            <p>Девятая страница. Финальные события истории.</p>
+                            <p>An old woman emerged from the cottage, her eyes twinkling with wisdom. "I've been expecting you," she said.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Страница 9 -->
+            <!-- Page 9 -->
             <div class="page" data-page="9">
                 <div class="front">
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Страница 9</h2>
-                            <p>Девятая страница. Финальные события истории.</p>
+                            <p>An old woman emerged from the cottage, her eyes twinkling with wisdom. "I've been expecting you," she said.</p>
                         </div>
                     </div>
                 </div>
@@ -404,18 +387,17 @@
                     <div class="page-content">
                         <div class="page-image" style="background-image: url('Photos/Screenshot_20250921_224523_Gallery.jpg');"></div>
                         <div class="page-text">
-                            <h2>Последняя страница</h2>
-                            <p>Конец книги. Надеемся, вам понравилось!</p>
+                            <p>The woman handed Elara a glowing crystal. "This will light your way when darkness falls. Remember, the real treasure is not gold, but knowledge."</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Кнопки навигации -->
+        <!-- Navigation buttons -->
         <div class="navigation">
-            <button id="prev-btn" class="nav-btn" disabled>Назад</button>
-            <button id="next-btn" class="nav-btn">Далее</button>
+            <button id="prev-btn" class="nav-btn" disabled>Back</button>
+            <button id="next-btn" class="nav-btn">Next</button>
         </div>
     </div>
 
@@ -427,13 +409,13 @@
             let currentPage = 0;
             const totalPages = pages.length;
             
-            // Функция для обновления состояния кнопок
+            // Function to update button states
             function updateButtons() {
                 prevBtn.disabled = currentPage === 0;
                 nextBtn.disabled = currentPage === totalPages - 1;
             }
             
-            // Функция для перелистывания страницы вперед
+            // Function to flip to next page
             function flipNext() {
                 if (currentPage < totalPages - 1) {
                     pages[currentPage].classList.add('flipped');
@@ -442,7 +424,7 @@
                 }
             }
             
-            // Функция для перелистывания страницы назад
+            // Function to flip to previous page
             function flipPrev() {
                 if (currentPage > 0) {
                     currentPage--;
@@ -451,7 +433,7 @@
                 }
             }
             
-            // Добавляем обработчики клика на каждую страницу (только для перелистывания вперед)
+            // Add click handlers to each page (forward only)
             pages.forEach((page, index) => {
                 page.addEventListener('click', function() {
                     if (index === currentPage) {
@@ -460,11 +442,11 @@
                 });
             });
             
-            // Обработчики для кнопок
+            // Button handlers
             prevBtn.addEventListener('click', flipPrev);
             nextBtn.addEventListener('click', flipNext);
             
-            // Инициализация состояния кнопок
+            // Initialize button states
             updateButtons();
         });
     </script>
