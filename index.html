@@ -12,15 +12,15 @@
         }
 
         body {
-            height: 100vh;
+            min-height: 100vh;
             background: linear-gradient(135deg, #00ff00, #00cc00);
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
             position: relative;
             padding: 20px;
+            overflow-x: hidden;
         }
 
         body::before {
@@ -46,7 +46,6 @@
             }
         }
 
-        /* Стили для десктопов */
         .book-container {
             position: relative;
             width: 90vw;
@@ -57,11 +56,9 @@
         }
 
         .book {
-            position: absolute;
+            position: relative;
             width: 100%;
             height: 100%;
-            top: 0;
-            left: 0;
             transform-style: preserve-3d;
             transition: transform 0.5s;
         }
@@ -74,25 +71,54 @@
             left: 0;
             transform-origin: left center;
             transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
             cursor: pointer;
-            border-radius: 8px 0 0 8px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: white;
+            overflow: hidden;
         }
 
-        .front, .back {
+        .page-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .page-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .page-front {
             position: absolute;
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 8px 0 0 8px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
         }
 
-        .back {
+        .page-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 5px;
             transform: rotateY(180deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
         }
 
         .page.flipped {
@@ -132,7 +158,7 @@
         }
 
         #prevBtn {
-            background: #9C27B0; /* Фиолетовый */
+            background: #9C27B0;
             color: white;
         }
 
@@ -142,7 +168,7 @@
         }
 
         #nextBtn {
-            background: #FFEB3B; /* Желтый */
+            background: #FFEB3B;
             color: #333;
         }
 
@@ -161,7 +187,6 @@
             border-radius: 5px;
         }
 
-        /* Декоративные элементы */
         .decoration {
             position: absolute;
             width: 100px;
@@ -254,6 +279,19 @@
                 padding: 5px 10px;
             }
         }
+
+        @media (max-width: 360px) {
+            .book-container {
+                height: 55vh;
+                max-height: 350px;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                gap: 10px;
+                bottom: -90px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -263,37 +301,61 @@
 
     <div class="book-container">
         <div class="book">
-            <!-- Обложка -->
-            <div class="page cover" id="cover">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224535_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
+            <!-- Обложка и страницы -->
+            <div class="page active" id="cover">
+                <div class="page-front">
+                    <img src="Photos/Screenshot_20250921_224535_Gallery.jpg" alt="Обложка" class="page-image">
+                </div>
+                <div class="page-back">
+                    <img src="Photos/Screenshot_20250921_224342_Gallery.jpg" alt="Страница 1" class="page-image">
+                </div>
             </div>
-
-            <!-- Страницы -->
+            
             <div class="page" id="page1">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
+                <div class="page-front">
+                    <img src="Photos/Screenshot_20250921_224350_Gallery.jpg" alt="Страница 2" class="page-image">
+                </div>
+                <div class="page-back">
+                    <img src="Photos/Screenshot_20250921_224357_Gallery.jpg" alt="Страница 3" class="page-image">
+                </div>
             </div>
-
+            
             <div class="page" id="page2">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
+                <div class="page-front">
+                    <img src="Photos/Screenshot_20250921_224404_Gallery.jpg" alt="Страница 4" class="page-image">
+                </div>
+                <div class="page-back">
+                    <img src="Photos/Screenshot_20250921_224446_Gallery.jpg" alt="Страница 5" class="page-image">
+                </div>
             </div>
-
+            
             <div class="page" id="page3">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
+                <div class="page-front">
+                    <img src="Photos/Screenshot_20250921_224453_Gallery.jpg" alt="Страница 6" class="page-image">
+                </div>
+                <div class="page-back">
+                    <img src="Photos/Screenshot_20250921_224457_Gallery.jpg" alt="Страница 7" class="page-image">
+                </div>
             </div>
-
+            
             <div class="page" id="page4">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
-                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
+                <div class="page-front">
+                    <img src="Photos/Screenshot_20250921_224514_Gallery.jpg" alt="Страница 8" class="page-image">
+                </div>
+                <div class="page-back">
+                    <img src="Photos/Screenshot_20250921_224519_Gallery.jpg" alt="Страница 9" class="page-image">
+                </div>
             </div>
-
-            <!-- Последняя страница -->
+            
             <div class="page" id="page5">
-                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224523_Gallery.jpg');"></div>
-                <div class="back" style="background-color: #DCEDC8;"></div>
+                <div class="page-front">
+                    <img src="Photos/Screenshot_20250921_224523_Gallery.jpg" alt="Страница 10" class="page-image">
+                </div>
+                <div class="page-back">
+                    <div style="background: white; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;">
+                        Конец книги
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -313,113 +375,106 @@
             const totalPagesSpan = document.getElementById('totalPages');
             
             let currentPageIndex = 0;
-            const totalPages = 10; // Всего 10 страниц
+            const totalPages = 10; // Всего 10 страниц контента
             totalPagesSpan.textContent = totalPages;
-
-            // Функция для определения, по какой части страницы кликнули
-            function getClickPosition(e, element) {
-                const rect = element.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const width = rect.width;
-                return x < width / 2 ? 'left' : 'right';
-            }
+            
+            // Инициализация - показываем только обложку
+            pages.forEach((page, index) => {
+                if (index !== 0) {
+                    page.style.display = 'none';
+                }
+            });
 
             function updatePageCounter() {
                 currentPageSpan.textContent = currentPageIndex + 1;
             }
 
-            function flipPage(pageIndex) {
-                if (pageIndex < 0 || pageIndex >= totalPages) return;
-
-                currentPageIndex = pageIndex;
-                updatePageCounter();
-
-                // Сбрасываем все страницы
-                pages.forEach((page, index) => {
-                    page.classList.remove('active', 'flipped');
+            function flipPage(direction) {
+                if (direction === 'next' && currentPageIndex < totalPages) {
+                    // Скрываем текущую страницу
+                    pages[Math.floor(currentPageIndex / 2)].style.display = 'none';
                     
-                    // Для обложки особый случай
-                    if (index === 0) {
-                        if (currentPageIndex > 0) {
-                            page.classList.add('flipped');
+                    // Переходим к следующей странице
+                    currentPageIndex++;
+                    updatePageCounter();
+                    
+                    // Показываем следующую страницу
+                    const nextPageIndex = Math.floor(currentPageIndex / 2);
+                    if (nextPageIndex < pages.length) {
+                        pages[nextPageIndex].style.display = 'block';
+                        pages[nextPageIndex].classList.add('active');
+                        
+                        // Если переворачиваем на обратную сторону страницы
+                        if (currentPageIndex % 2 === 1) {
+                            pages[nextPageIndex].classList.add('flipped');
                         } else {
-                            page.classList.remove('flipped');
+                            pages[nextPageIndex].classList.remove('flipped');
                         }
-                        return;
                     }
+                } 
+                else if (direction === 'prev' && currentPageIndex > 0) {
+                    // Скрываем текущую страницу
+                    pages[Math.floor(currentPageIndex / 2)].style.display = 'none';
                     
-                    // Для обычных страниц
-                    const pageNumber = (index - 1) * 2 + 1;
-                    if (pageNumber <= currentPageIndex) {
-                        page.classList.add('flipped');
+                    // Переходим к предыдущей странице
+                    currentPageIndex--;
+                    updatePageCounter();
+                    
+                    // Показываем предыдущую страницу
+                    const prevPageIndex = Math.floor(currentPageIndex / 2);
+                    if (prevPageIndex >= 0) {
+                        pages[prevPageIndex].style.display = 'block';
+                        pages[prevPageIndex].classList.add('active');
+                        
+                        // Если переворачиваем на обратную сторону страницы
+                        if (currentPageIndex % 2 === 1) {
+                            pages[prevPageIndex].classList.add('flipped');
+                        } else {
+                            pages[prevPageIndex].classList.remove('flipped');
+                        }
                     }
-                    if (pageNumber === currentPageIndex) {
-                        page.classList.add('active');
-                    }
-                });
+                }
             }
 
             // Обработка кликов по страницам
             pages.forEach((page, index) => {
                 page.addEventListener('click', function(e) {
-                    const clickPosition = getClickPosition(e, this);
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const width = rect.width;
                     
-                    // Для обложки
-                    if (index === 0) {
-                        if (currentPageIndex === 0 && clickPosition === 'right') {
-                            flipPage(1);
-                        }
-                        return;
-                    }
-                    
-                    // Для обычных страниц
-                    const pageNumber = (index - 1) * 2 + 1;
-                    
-                    if (clickPosition === 'right') {
-                        // Клик по правой части - листаем вперед
-                        if (pageNumber === currentPageIndex) {
-                            flipPage(currentPageIndex + 1);
-                        }
-                    } else {
-                        // Клик по левой части - листаем назад
-                        if (pageNumber === currentPageIndex + 1) {
-                            flipPage(currentPageIndex - 1);
-                        }
+                    // Клик по правой части - листаем вперед
+                    if (x > width / 2) {
+                        flipPage('next');
+                    } 
+                    // Клик по левой части - листаем назад
+                    else {
+                        flipPage('prev');
                     }
                 });
             });
 
             // Кнопки навигации
             prevBtn.addEventListener('click', function() {
-                if (currentPageIndex > 0) {
-                    flipPage(currentPageIndex - 1);
-                }
+                flipPage('prev');
             });
 
             nextBtn.addEventListener('click', function() {
-                if (currentPageIndex < totalPages - 1) {
-                    flipPage(currentPageIndex + 1);
-                }
+                flipPage('next');
             });
-
-            // Инициализация
-            flipPage(0);
 
             // Управление с клавиатуры
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'ArrowLeft') {
-                    prevBtn.click();
+                    flipPage('prev');
                 } else if (event.key === 'ArrowRight') {
-                    nextBtn.click();
+                    flipPage('next');
                 }
             });
 
-            // Адаптация к изменению размера окна
-            window.addEventListener('resize', function() {
-                // Пересчитываем позиции страниц при изменении размера окна
-                flipPage(currentPageIndex);
-            });
+            // Инициализация
+            updatePageCounter();
         });
     </script>
 </body>
-</html>   
+</html>           
