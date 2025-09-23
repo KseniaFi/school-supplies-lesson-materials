@@ -12,55 +12,32 @@
         }
 
         body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #00ff00, #00cc00);
+            background: url('Photos/IMG_20250923_225112_703.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            position: relative;
-            padding: 20px;
+            min-height: 100vh;
+            perspective: 1000px;
             overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 255, 0, 0.3) 0%, rgba(0, 255, 0, 0) 70%);
-            animation: glow 4s infinite alternate;
-            z-index: -1;
-        }
-
-        @keyframes glow {
-            0% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-        }
-
         .book-container {
-            position: relative;
             width: 90vw;
-            height: 80vh;
+            height: 70vh;
             max-width: 800px;
             max-height: 600px;
-            perspective: 1500px;
+            position: relative;
+            transform-style: preserve-3d;
         }
 
         .book {
-            position: relative;
             width: 100%;
             height: 100%;
+            position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.5s;
+            transition: transform 0.6s;
         }
 
         .page {
@@ -71,410 +48,171 @@
             left: 0;
             transform-origin: left center;
             transform-style: preserve-3d;
-            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
-            cursor: pointer;
+            transition: transform 0.8s ease-in-out;
             border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            background: white;
             overflow: hidden;
-        }
-
-        .page-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .page-image {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-        }
-
-        .page-front {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: white;
-        }
-
-        .page-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 5px;
-            transform: rotateY(180deg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: white;
-        }
-
-        .page.flipped {
-            transform: rotateY(-180deg);
-            z-index: 2;
-        }
-
-        .page.active {
-            z-index: 3;
-        }
-
-        .control-panel {
-            position: absolute;
-            bottom: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 30px;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        #prevBtn {
-            background: #9C27B0;
-            color: white;
-        }
-
-        #prevBtn:hover {
-            background: #7B1FA2;
-            transform: translateY(-2px);
-        }
-
-        #nextBtn {
-            background: #FFEB3B;
-            color: #333;
-        }
-
-        #nextBtn:hover {
-            background: #FBC02D;
-            transform: translateY(-2px);
-        }
-
-        .page-counter {
-            font-size: 1rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 2px black;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-        }
-
-        .decoration {
+        .front, .back {
             position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
-            z-index: -1;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background-size: cover;
+            background-position: center;
         }
 
-        .decoration:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            animation: float 8s infinite ease-in-out;
+        .back {
+            transform: rotateY(180deg);
         }
 
-        .decoration:nth-child(2) {
-            top: 70%;
-            right: 10%;
-            animation: float 10s infinite ease-in-out;
-            animation-delay: 1s;
+        /* Позиционирование страниц */
+        .page[data-page="cover"] { z-index: 10; }
+        .page[data-page="1"] { z-index: 9; }
+        .page[data-page="2"] { z-index: 8; }
+        .page[data-page="3"] { z-index: 7; }
+        .page[data-page="4"] { z-index: 6; }
+        .page[data-page="5"] { z-index: 5; }
+        .page[data-page="6"] { z-index: 4; }
+        .page[data-page="7"] { z-index: 3; }
+        .page[data-page="8"] { z-index: 2; }
+        .page[data-page="9"] { z-index: 1; }
+
+        /* Состояние перевернутой страницы */
+        .flipped {
+            transform: rotateY(-180deg);
         }
 
-        .decoration:nth-child(3) {
-            bottom: 20%;
-            left: 15%;
-            animation: float 12s infinite ease-in-out;
-            animation-delay: 2s;
+        /* Тень для эффекта глубины */
+        .page::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            transition: background 0.3s;
+            pointer-events: none;
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-            }
+        .page:hover::after {
+            background: rgba(0, 0, 0, 0.05);
         }
 
-        /* Мобильная адаптация */
+        /* Адаптация для мобильных устройств */
         @media (max-width: 768px) {
             .book-container {
                 width: 95vw;
-                height: 70vh;
-                max-width: none;
-                max-height: 500px;
-                perspective: 1000px;
+                height: 80vh;
             }
-
-            .control-panel {
-                bottom: -70px;
-                gap: 20px;
-                padding: 12px 20px;
-            }
-
-            button {
-                padding: 10px 20px;
-                font-size: 1rem;
-            }
-
-            .page-counter {
-                font-size: 0.9rem;
-                padding: 6px 12px;
-            }
-
-            .decoration {
-                width: 60px;
-                height: 60px;
+            
+            body {
+                perspective: 500px;
             }
         }
 
         @media (max-width: 480px) {
             .book-container {
-                height: 60vh;
-                max-height: 400px;
-            }
-
-            .control-panel {
-                bottom: -60px;
-                gap: 15px;
-                padding: 10px 15px;
-            }
-
-            button {
-                padding: 8px 15px;
-                font-size: 0.9rem;
-            }
-
-            .page-counter {
-                font-size: 0.8rem;
-                padding: 5px 10px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .book-container {
-                height: 55vh;
-                max-height: 350px;
-            }
-            
-            .control-panel {
-                flex-direction: column;
-                gap: 10px;
-                bottom: -90px;
+                width: 98vw;
+                height: 85vh;
             }
         }
     </style>
 </head>
 <body>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
-
     <div class="book-container">
         <div class="book">
-            <!-- Обложка и страницы -->
-            <div class="page active" id="cover">
-                <div class="page-front">
-                    <img src="Photos/Screenshot_20250921_224535_Gallery.jpg" alt="Обложка" class="page-image">
-                </div>
-                <div class="page-back">
-                    <img src="Photos/Screenshot_20250921_224342_Gallery.jpg" alt="Страница 1" class="page-image">
-                </div>
+            <!-- Обложка -->
+            <div class="page" data-page="cover">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224535_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
             </div>
             
-            <div class="page" id="page1">
-                <div class="page-front">
-                    <img src="Photos/Screenshot_20250921_224350_Gallery.jpg" alt="Страница 2" class="page-image">
-                </div>
-                <div class="page-back">
-                    <img src="Photos/Screenshot_20250921_224357_Gallery.jpg" alt="Страница 3" class="page-image">
-                </div>
+            <!-- Страница 1 -->
+            <div class="page" data-page="1">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224342_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
             </div>
             
-            <div class="page" id="page2">
-                <div class="page-front">
-                    <img src="Photos/Screenshot_20250921_224404_Gallery.jpg" alt="Страница 4" class="page-image">
-                </div>
-                <div class="page-back">
-                    <img src="Photos/Screenshot_20250921_224446_Gallery.jpg" alt="Страница 5" class="page-image">
-                </div>
+            <!-- Страница 2 -->
+            <div class="page" data-page="2">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224350_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
             </div>
             
-            <div class="page" id="page3">
-                <div class="page-front">
-                    <img src="Photos/Screenshot_20250921_224453_Gallery.jpg" alt="Страница 6" class="page-image">
-                </div>
-                <div class="page-back">
-                    <img src="Photos/Screenshot_20250921_224457_Gallery.jpg" alt="Страница 7" class="page-image">
-                </div>
+            <!-- Страница 3 -->
+            <div class="page" data-page="3">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224357_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
             </div>
             
-            <div class="page" id="page4">
-                <div class="page-front">
-                    <img src="Photos/Screenshot_20250921_224514_Gallery.jpg" alt="Страница 8" class="page-image">
-                </div>
-                <div class="page-back">
-                    <img src="Photos/Screenshot_20250921_224519_Gallery.jpg" alt="Страница 9" class="page-image">
-                </div>
+            <!-- Страница 4 -->
+            <div class="page" data-page="4">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224404_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
             </div>
             
-            <div class="page" id="page5">
-                <div class="page-front">
-                    <img src="Photos/Screenshot_20250921_224523_Gallery.jpg" alt="Страница 10" class="page-image">
-                </div>
-                <div class="page-back">
-                    <div style="background: white; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;">
-                        Конец книги
-                    </div>
-                </div>
+            <!-- Страница 5 -->
+            <div class="page" data-page="5">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224446_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
             </div>
-        </div>
-
-        <div class="control-panel">
-            <button id="prevBtn">Back</button>
-            <div class="page-counter">Page: <span id="currentPage">1</span> / <span id="totalPages">10</span></div>
-            <button id="nextBtn">Next</button>
+            
+            <!-- Страница 6 -->
+            <div class="page" data-page="6">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224453_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
+            </div>
+            
+            <!-- Страница 7 -->
+            <div class="page" data-page="7">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224457_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
+            </div>
+            
+            <!-- Страница 8 -->
+            <div class="page" data-page="8">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224514_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
+            </div>
+            
+            <!-- Страница 9 -->
+            <div class="page" data-page="9">
+                <div class="front" style="background-image: url('Photos/Screenshot_20250921_224519_Gallery.jpg');"></div>
+                <div class="back" style="background-image: url('Photos/Screenshot_20250921_224523_Gallery.jpg');"></div>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const pages = document.querySelectorAll('.page');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const currentPageSpan = document.getElementById('currentPage');
-            const totalPagesSpan = document.getElementById('totalPages');
+            let currentPage = 0;
             
-            let currentPageIndex = 0;
-            const totalPages = 10; // Всего 10 страниц контента
-            totalPagesSpan.textContent = totalPages;
-            
-            // Инициализация - показываем только обложку
-            pages.forEach((page, index) => {
-                if (index !== 0) {
-                    page.style.display = 'none';
-                }
-            });
-
-            function updatePageCounter() {
-                currentPageSpan.textContent = currentPageIndex + 1;
-            }
-
-            function flipPage(direction) {
-                if (direction === 'next' && currentPageIndex < totalPages) {
-                    // Скрываем текущую страницу
-                    pages[Math.floor(currentPageIndex / 2)].style.display = 'none';
-                    
-                    // Переходим к следующей странице
-                    currentPageIndex++;
-                    updatePageCounter();
-                    
-                    // Показываем следующую страницу
-                    const nextPageIndex = Math.floor(currentPageIndex / 2);
-                    if (nextPageIndex < pages.length) {
-                        pages[nextPageIndex].style.display = 'block';
-                        pages[nextPageIndex].classList.add('active');
-                        
-                        // Если переворачиваем на обратную сторону страницы
-                        if (currentPageIndex % 2 === 1) {
-                            pages[nextPageIndex].classList.add('flipped');
-                        } else {
-                            pages[nextPageIndex].classList.remove('flipped');
-                        }
-                    }
-                } 
-                else if (direction === 'prev' && currentPageIndex > 0) {
-                    // Скрываем текущую страницу
-                    pages[Math.floor(currentPageIndex / 2)].style.display = 'none';
-                    
-                    // Переходим к предыдущей странице
-                    currentPageIndex--;
-                    updatePageCounter();
-                    
-                    // Показываем предыдущую страницу
-                    const prevPageIndex = Math.floor(currentPageIndex / 2);
-                    if (prevPageIndex >= 0) {
-                        pages[prevPageIndex].style.display = 'block';
-                        pages[prevPageIndex].classList.add('active');
-                        
-                        // Если переворачиваем на обратную сторону страницы
-                        if (currentPageIndex % 2 === 1) {
-                            pages[prevPageIndex].classList.add('flipped');
-                        } else {
-                            pages[prevPageIndex].classList.remove('flipped');
-                        }
-                    }
+            // Функция для перелистывания страницы
+            function flipPage(pageIndex) {
+                if (pageIndex < currentPage) return; // Запрет перелистывания назад
+                
+                if (pageIndex < pages.length) {
+                    pages[pageIndex].classList.add('flipped');
+                    currentPage = pageIndex + 1;
                 }
             }
-
-            // Обработка кликов по страницам
+            
+            // Добавляем обработчики клика на каждую страницу
             pages.forEach((page, index) => {
-                page.addEventListener('click', function(e) {
-                    const rect = this.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const width = rect.width;
-                    
-                    // Клик по правой части - листаем вперед
-                    if (x > width / 2) {
-                        flipPage('next');
-                    } 
-                    // Клик по левой части - листаем назад
-                    else {
-                        flipPage('prev');
+                page.addEventListener('click', function() {
+                    if (index === currentPage) {
+                        flipPage(index);
                     }
                 });
             });
-
-            // Кнопки навигации
-            prevBtn.addEventListener('click', function() {
-                flipPage('prev');
-            });
-
-            nextBtn.addEventListener('click', function() {
-                flipPage('next');
-            });
-
-            // Управление с клавиатуры
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'ArrowLeft') {
-                    flipPage('prev');
-                } else if (event.key === 'ArrowRight') {
-                    flipPage('next');
-                }
-            });
-
-            // Инициализация
-            updatePageCounter();
+            
+            // Автоматическое перелистывание для демонстрации
+            setTimeout(() => flipPage(0), 1000);
         });
     </script>
 </body>
-</html>           
+</html>
