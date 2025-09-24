@@ -20,6 +20,19 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+        
+        /* Green semi-transparent overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(144, 238, 144, 0.3); /* Light green with transparency */
+            z-index: -1;
         }
         
         h1 {
@@ -44,7 +57,7 @@
             width: 48%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
         
         .container-title {
@@ -56,7 +69,6 @@
         }
         
         .item {
-            background-color: white;
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -70,23 +82,28 @@
             border: 4px solid transparent;
         }
         
-        /* Round cells for images */
+        /* Round cells for images - doubled in size */
         .image-item {
             border-radius: 50%;
-            width: 180px;
-            height: 180px;
+            width: 360px; /* Doubled from 180px */
+            height: 360px; /* Doubled from 180px */
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 0 auto;
             padding: 10px;
             overflow: hidden;
+            background-color: white;
         }
         
         .image-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 16px rgba(0,0,0,0.15);
             border-color: #7ed321;
+        }
+        
+        .phrase-item {
+            background-color: #ffb366; /* Soft orange background */
         }
         
         .phrase-item:hover {
@@ -195,20 +212,24 @@
                 width: 210mm;
                 height: 297mm;
                 margin: 0;
-                padding: 10mm;
+                padding: 5mm;
                 box-sizing: border-box;
-                font-size: 14pt;
+                font-size: 10pt;
                 background: white !important;
+            }
+            
+            body::before {
+                display: none;
             }
 
             /* Game container in two columns */
             .game-container {
                 display: block !important;
-                column-count: 2;
-                column-gap: 15mm;
-                column-rule: 1px dashed #ccc;
                 width: 100%;
                 page-break-inside: avoid;
+                column-count: 2;
+                column-gap: 10mm;
+                column-fill: balance;
             }
 
             .images-container, .phrases-container {
@@ -220,7 +241,23 @@
             .item {
                 break-inside: avoid;
                 page-break-inside: avoid;
-                margin-bottom: 5mm;
+                margin-bottom: 8mm;
+            }
+            
+            /* Adjust image size for PDF */
+            .image-item {
+                width: 80mm !important;
+                height: 80mm !important;
+                margin: 0 auto 5mm !important;
+                page-break-inside: avoid;
+            }
+            
+            .phrase-item {
+                margin-bottom: 8mm;
+                min-height: auto;
+                background-color: #ffb366 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
             }
 
             /* Hide unnecessary elements for PDF */
@@ -228,23 +265,20 @@
                 display: none !important;
             }
             
-            /* For round images in PDF */
-            .image-item {
-                width: 120px !important;
-                height: 120px !important;
-                margin: 0 auto 10mm !important;
+            .container-title {
+                font-size: 14pt;
+                margin-bottom: 5mm;
             }
             
-            .phrase-item {
-                margin-bottom: 10mm;
-                min-height: auto;
+            .phrase-item p {
+                font-size: 12pt;
             }
         }
 
         /* Page size definition */
         @page {
             size: A4;
-            margin: 10mm;
+            margin: 5mm;
         }
         
         /* Tablet responsiveness */
@@ -267,8 +301,8 @@
             }
             
             .image-item {
-                width: 160px;
-                height: 160px;
+                width: 320px;
+                height: 320px;
             }
         }
         
@@ -293,8 +327,8 @@
             }
             
             .image-item {
-                width: 140px;
-                height: 140px;
+                width: 280px;
+                height: 280px;
             }
             
             button {
@@ -323,8 +357,8 @@
             }
             
             .image-item {
-                width: 120px;
-                height: 120px;
+                width: 240px;
+                height: 240px;
             }
             
             button {
@@ -416,7 +450,7 @@
                 
                 // Add error handling for images
                 img.onerror = function() {
-                    this.src = `https://via.placeholder.com/300x300/4CAF50/white?text=Image+${index+1}`;
+                    this.src = `https://via.placeholder.com/600x600/4CAF50/white?text=Image+${index+1}`;
                     console.warn(`Failed to load image: ${item.image}`);
                 };
                 
@@ -564,74 +598,79 @@
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             
-            // Save original styles for restoration after PDF creation
-            const originalStyles = {
-                bodyWidth: document.body.style.width,
-                bodyHeight: document.body.style.height,
-                bodyPadding: document.body.style.padding,
-                bodyBackground: document.body.style.background,
-                gameContainerDisplay: document.getElementById('game-container').style.display,
-                gameContainerColumnCount: document.getElementById('game-container').style.columnCount
-            };
+            // Create a temporary container for PDF generation
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.width = '210mm';
+            pdfContainer.style.padding = '10mm';
+            pdfContainer.style.background = 'white';
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            document.body.appendChild(pdfContainer);
             
-            // Apply print styles to body
-            document.body.style.width = '210mm';
-            document.body.style.height = 'auto';
-            document.body.style.padding = '10mm';
-            document.body.style.background = 'white';
-            
-            // Apply print styles to game container
+            // Clone the game container and adjust for PDF
             const gameContainer = document.getElementById('game-container');
-            gameContainer.style.display = 'block';
-            gameContainer.style.columnCount = '2';
-            gameContainer.style.columnGap = '15mm';
+            const clone = gameContainer.cloneNode(true);
             
-            // Hide unnecessary elements
-            document.querySelector('.controls').style.display = 'none';
-            document.querySelector('h1').style.display = 'none';
-            document.querySelector('.completion-message').style.display = 'none';
+            // Apply PDF styles to the clone
+            clone.style.display = 'block';
+            clone.style.columnCount = '2';
+            clone.style.columnGap = '10mm';
+            clone.style.width = '100%';
             
-            // Use html2canvas to create image of element 
-            html2canvas(gameContainer, {
-                scale: 2, // Increase resolution for better quality
-                useCORS: true, // Allow cross-origin images
-                scrollY: -window.scrollY,
-                width: gameContainer.scrollWidth,
-                height: gameContainer.scrollHeight
+            // Adjust image sizes for PDF
+            const imageItems = clone.querySelectorAll('.image-item');
+            imageItems.forEach(item => {
+                item.style.width = '80mm';
+                item.style.height = '80mm';
+                item.style.margin = '0 auto 5mm';
+            });
+            
+            // Adjust phrase items for PDF
+            const phraseItems = clone.querySelectorAll('.phrase-item');
+            phraseItems.forEach(item => {
+                item.style.marginBottom = '8mm';
+                item.style.minHeight = 'auto';
+                item.style.backgroundColor = '#ffb366';
+            });
+            
+            // Adjust text sizes for PDF
+            const texts = clone.querySelectorAll('p');
+            texts.forEach(text => {
+                text.style.fontSize = '12pt';
+            });
+            
+            const titles = clone.querySelectorAll('.container-title');
+            titles.forEach(title => {
+                title.style.fontSize = '14pt';
+                title.style.marginBottom = '5mm';
+            });
+            
+            pdfContainer.appendChild(clone);
+            
+            // Use html2canvas to create image of element
+            html2canvas(pdfContainer, {
+                scale: 2,
+                useCORS: true,
+                width: pdfContainer.scrollWidth,
+                height: pdfContainer.scrollHeight,
+                scrollX: 0,
+                scrollY: 0
             }).then(canvas => {
-                // Restore original styles
-                document.body.style.width = originalStyles.bodyWidth;
-                document.body.style.height = originalStyles.bodyHeight;
-                document.body.style.padding = originalStyles.bodyPadding;
-                document.body.style.background = originalStyles.bodyBackground;
-                
-                gameContainer.style.display = originalStyles.gameContainerDisplay;
-                gameContainer.style.columnCount = originalStyles.gameContainerColumnCount;
-                
-                // Show hidden elements
-                document.querySelector('.controls').style.display = 'flex';
-                document.querySelector('h1').style.display = 'block';
-                document.querySelector('.completion-message').style.display = 'block';
+                // Remove temporary container
+                document.body.removeChild(pdfContainer);
                 
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgWidth = 190; // Image width in PDF
-                const pageHeight = 280; // A4 page height in mm
+                
+                // Calculate dimensions to fit on one page
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                
+                const imgWidth = pageWidth - 20; // 10mm margins on each side
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = 0;
                 
-                // Add first page
-                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-                
-                // Add additional pages if content doesn't fit on one
-                while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
+                // Add image to PDF
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
                 
                 // Save PDF
                 pdf.save('matching-game-results.pdf');
