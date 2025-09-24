@@ -264,13 +264,14 @@
             margin: 0 auto;
             border: 3px solid #4a4a9c;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            padding: 5mm;
+            /* Убрали padding чтобы изображение занимало всю область */
         }
         
         .pdf-image-item img {
+            /* Исправлено: object-fit: contain чтобы сохранить пропорции */
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 50%;
         }
         
@@ -519,8 +520,21 @@
                 img.src = item.image;
                 img.alt = `Image ${index+1}`;
                 
+                // Добавляем обработчик ошибок для PDF изображений
                 img.onerror = function() {
                     this.src = `https://via.placeholder.com/400x400/4CAF50/white?text=Image+${index+1}`;
+                };
+                
+                // Ждем загрузки изображения для правильного определения пропорций
+                img.onload = function() {
+                    // Убеждаемся, что изображение сохраняет пропорции
+                    if (this.naturalWidth > this.naturalHeight) {
+                        this.style.width = '100%';
+                        this.style.height = 'auto';
+                    } else {
+                        this.style.width = 'auto';
+                        this.style.height = '100%';
+                    }
                 };
                 
                 pdfImageItem.appendChild(img);
@@ -667,7 +681,7 @@
             const pdfContainer = document.getElementById('pdf-container');
             pdfContainer.style.display = 'block';
             
-            // Wait a moment for the PDF container to render
+            // Даем время для загрузки всех изображений в PDF контейнер
             setTimeout(() => {
                 // Capture the PDF container with higher quality
                 html2canvas(pdfContainer, {
@@ -680,7 +694,10 @@
                     scrollX: 0,
                     scrollY: 0,
                     windowWidth: pdfContainer.scrollWidth,
-                    windowHeight: pdfContainer.scrollHeight
+                    windowHeight: pdfContainer.scrollHeight,
+                    // Добавляем настройки для лучшего рендеринга изображений
+                    allowTaint: true,
+                    foreignObjectRendering: false
                 }).then(canvas => {
                     const imgData = canvas.toDataURL('image/jpeg', 0.95);
                     
@@ -714,7 +731,7 @@
                     pdfContainer.style.display = 'none';
                     alert('Error generating PDF. Please try again.');
                 });
-            }, 500);
+            }, 1000); // Увеличили время ожидания для загрузки изображений
         }
 
         // Initialize game when page loads
