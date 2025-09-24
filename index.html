@@ -213,122 +213,91 @@
         
         /* PDF containers (hidden on screen) */
         .pdf-container {
-            display: none;
-            position: absolute;
-            left: -9999px;
+            position: fixed;
+            left: 0;
             top: 0;
             width: 210mm;
             height: 297mm;
+            padding: 15mm;
+            background: linear-gradient(rgba(144, 238, 144, 0.3), rgba(144, 238, 144, 0.3)), 
+                        url('Photos/IMG_20250923_225112_703.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: 10000;
+            display: none;
+            box-sizing: border-box;
         }
         
-        /* Styles for printing and PDF export */
-        @media print {
-            body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                font-size: 10pt;
-                background: white !important;
-            }
-            
-            body::before {
-                display: none;
-            }
-
-            /* Hide game container and show PDF containers */
-            .game-container, .controls, .completion-message {
-                display: none !important;
-            }
-            
-            .pdf-container {
-                display: block !important;
-                position: static;
-                left: auto;
-                top: auto;
-                width: 210mm;
-                height: 297mm;
-                padding: 10mm;
-                box-sizing: border-box;
-                background: linear-gradient(rgba(144, 238, 144, 0.3), rgba(144, 238, 144, 0.3)), 
-                            url('Photos/IMG_20250923_225112_703.jpg') no-repeat center center;
-                background-size: cover;
-            }
-            
-            .pdf-title {
-                font-size: 20pt;
-                text-align: center;
-                margin-bottom: 8mm;
-                color: #4a4a9c;
-                font-weight: bold;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }
-            
-            .pdf-content {
-                display: flex;
-                justify-content: space-between;
-                height: calc(100% - 25mm);
-            }
-            
-            .pdf-column {
-                width: 48%;
-                display: flex;
-                flex-direction: column;
-                gap: 5mm;
-            }
-            
-            .pdf-image-item {
-                width: 40mm;
-                height: 40mm;
-                border-radius: 50%;
-                overflow: hidden;
-                background-color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 0 auto;
-                border: 2px solid #4a4a9c;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-            
-            .pdf-image-item img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 50%;
-            }
-            
-            .pdf-phrase-item {
-                background-color: #ffb366;
-                padding: 5mm;
-                border-radius: 5mm;
-                text-align: center;
-                border: 2px solid #4a4a9c;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 20mm;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-            
-            .pdf-phrase-item p {
-                font-size: 10pt;
-                font-weight: bold;
-                margin: 0;
-                color: #333;
-                line-height: 1.3;
-            }
-            
-            .pdf-instruction {
-                text-align: center;
-                font-size: 12pt;
-                margin-top: 5mm;
-                color: #4a4a9c;
-                font-weight: bold;
-                font-style: italic;
-            }
+        .pdf-title {
+            font-size: 24pt;
+            text-align: center;
+            margin-bottom: 10mm;
+            color: #4a4a9c;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .pdf-content {
+            display: flex;
+            justify-content: space-between;
+            height: calc(100% - 30mm);
+            gap: 10mm;
+        }
+        
+        .pdf-column {
+            width: 48%;
+            display: flex;
+            flex-direction: column;
+            gap: 8mm;
+            justify-content: space-around;
+        }
+        
+        .pdf-image-item {
+            width: 70mm;
+            height: 70mm;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            border: 3px solid #4a4a9c;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 5mm;
+        }
+        
+        .pdf-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        
+        .pdf-phrase-item {
+            background-color: #ffb366;
+            padding: 8mm;
+            border-radius: 8mm;
+            text-align: center;
+            border: 3px solid #4a4a9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 25mm;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 14pt;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .pdf-instruction {
+            text-align: center;
+            font-size: 14pt;
+            margin-top: 8mm;
+            color: #4a4a9c;
+            font-weight: bold;
+            font-style: italic;
         }
 
         /* Page size definition */
@@ -695,55 +664,57 @@
             const { jsPDF } = window.jspdf;
             
             // Show PDF container
-            document.getElementById('pdf-container').style.display = 'block';
+            const pdfContainer = document.getElementById('pdf-container');
+            pdfContainer.style.display = 'block';
             
             // Wait a moment for the PDF container to render
             setTimeout(() => {
-                // Capture the PDF container
-                html2canvas(document.getElementById('pdf-container'), {
-                    scale: 2,
+                // Capture the PDF container with higher quality
+                html2canvas(pdfContainer, {
+                    scale: 3, // Higher scale for better quality
                     useCORS: true,
-                    width: 210, // A4 width in mm
-                    height: 297, // A4 height in mm
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    width: pdfContainer.scrollWidth,
+                    height: pdfContainer.scrollHeight,
                     scrollX: 0,
                     scrollY: 0,
-                    backgroundColor: '#ffffff'
+                    windowWidth: pdfContainer.scrollWidth,
+                    windowHeight: pdfContainer.scrollHeight
                 }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
                     
                     // Create PDF
                     const pdf = new jsPDF('p', 'mm', 'a4');
                     const pageWidth = pdf.internal.pageSize.getWidth();
                     const pageHeight = pdf.internal.pageSize.getHeight();
                     
-                    // Add image to PDF (fill the entire page)
-                    pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+                    // Calculate dimensions to fit the page
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    
+                    const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+                    const imgWidthInPage = imgWidth * ratio;
+                    const imgHeightInPage = imgHeight * ratio;
+                    
+                    // Calculate positioning to center the image
+                    const x = (pageWidth - imgWidthInPage) / 2;
+                    const y = (pageHeight - imgHeightInPage) / 2;
+                    
+                    // Add image to PDF
+                    pdf.addImage(imgData, 'JPEG', x, y, imgWidthInPage, imgHeightInPage);
                     
                     // Hide PDF container
-                    document.getElementById('pdf-container').style.display = 'none';
+                    pdfContainer.style.display = 'none';
                     
                     // Save PDF
                     pdf.save('matching-game-worksheet.pdf');
                 }).catch(error => {
                     console.error('Error capturing PDF:', error);
-                    document.getElementById('pdf-container').style.display = 'none';
-                    
-                    // Fallback: try with lower scale
-                    html2canvas(document.getElementById('pdf-container'), {
-                        scale: 1,
-                        useCORS: true,
-                        backgroundColor: '#ffffff'
-                    }).then(canvas => {
-                        const imgData = canvas.toDataURL('image/png', 1.0);
-                        const pdf = new jsPDF('p', 'mm', 'a4');
-                        const pageWidth = pdf.internal.pageSize.getWidth();
-                        const pageHeight = pdf.internal.pageSize.getHeight();
-                        
-                        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
-                        pdf.save('matching-game-worksheet.pdf');
-                    });
+                    pdfContainer.style.display = 'none';
+                    alert('Error generating PDF. Please try again.');
                 });
-            }, 100);
+            }, 500);
         }
 
         // Initialize game when page loads
