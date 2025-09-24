@@ -214,6 +214,11 @@
         /* PDF containers (hidden on screen) */
         .pdf-container {
             display: none;
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 210mm;
+            height: 297mm;
         }
         
         /* Styles for printing and PDF export */
@@ -239,68 +244,53 @@
             
             .pdf-container {
                 display: block !important;
+                position: static;
+                left: auto;
+                top: auto;
                 width: 210mm;
                 height: 297mm;
-            }
-            
-            .pdf-page {
-                display: block !important;
-                width: 210mm;
-                height: 297mm;
-                padding: 15mm;
+                padding: 10mm;
                 box-sizing: border-box;
-                page-break-after: always;
-                position: relative;
                 background: linear-gradient(rgba(144, 238, 144, 0.3), rgba(144, 238, 144, 0.3)), 
                             url('Photos/IMG_20250923_225112_703.jpg') no-repeat center center;
                 background-size: cover;
             }
             
             .pdf-title {
-                font-size: 24pt;
+                font-size: 20pt;
                 text-align: center;
-                margin-bottom: 15mm;
+                margin-bottom: 8mm;
                 color: #4a4a9c;
                 font-weight: bold;
                 text-transform: uppercase;
-                letter-spacing: 2px;
+                letter-spacing: 1px;
             }
             
             .pdf-content {
                 display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: calc(100% - 30mm);
+                justify-content: space-between;
+                height: calc(100% - 25mm);
             }
             
-            .pdf-items-container {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15mm;
-                width: 100%;
-                max-width: 180mm;
-            }
-            
-            .pdf-item {
+            .pdf-column {
+                width: 48%;
                 display: flex;
                 flex-direction: column;
-                align-items: center;
-                justify-content: center;
+                gap: 5mm;
             }
             
             .pdf-image-item {
-                width: 70mm;
-                height: 70mm;
+                width: 40mm;
+                height: 40mm;
                 border-radius: 50%;
                 overflow: hidden;
                 background-color: white;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                margin-bottom: 5mm;
-                border: 3px solid #4a4a9c;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                margin: 0 auto;
+                border: 2px solid #4a4a9c;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
             
             .pdf-image-item img {
@@ -312,32 +302,32 @@
             
             .pdf-phrase-item {
                 background-color: #ffb366;
-                padding: 8mm;
-                border-radius: 8mm;
+                padding: 5mm;
+                border-radius: 5mm;
                 text-align: center;
-                width: 100%;
-                border: 3px solid #4a4a9c;
+                border: 2px solid #4a4a9c;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                min-height: 25mm;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                min-height: 20mm;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
             
             .pdf-phrase-item p {
-                font-size: 14pt;
+                font-size: 10pt;
                 font-weight: bold;
                 margin: 0;
                 color: #333;
-                line-height: 1.4;
+                line-height: 1.3;
             }
             
             .pdf-instruction {
                 text-align: center;
-                font-size: 16pt;
-                margin-top: 10mm;
+                font-size: 12pt;
+                margin-top: 5mm;
                 color: #4a4a9c;
                 font-weight: bold;
+                font-style: italic;
             }
         }
 
@@ -446,27 +436,18 @@
     
     <div class="completion-message" id="completion-message">Excellent! All matches are correct!</div>
     
-    <!-- PDF containers (hidden on screen) -->
-    <div class="pdf-container">
-        <div class="pdf-page" id="pdf-images-page">
-            <div class="pdf-title">Matching Game - Pictures</div>
-            <div class="pdf-content">
-                <div class="pdf-items-container" id="pdf-images-container">
-                    <!-- PDF images will be added via JavaScript -->
-                </div>
-                <div class="pdf-instruction">Match each picture with the correct phrase</div>
+    <!-- PDF container (hidden on screen) -->
+    <div class="pdf-container" id="pdf-container">
+        <div class="pdf-title">Picture Matching Activity</div>
+        <div class="pdf-content">
+            <div class="pdf-column" id="pdf-images-column">
+                <!-- PDF images will be added via JavaScript -->
+            </div>
+            <div class="pdf-column" id="pdf-phrases-column">
+                <!-- PDF phrases will be added via JavaScript -->
             </div>
         </div>
-        
-        <div class="pdf-page" id="pdf-phrases-page">
-            <div class="pdf-title">Matching Game - Phrases</div>
-            <div class="pdf-content">
-                <div class="pdf-items-container" id="pdf-phrases-container">
-                    <!-- PDF phrases will be added via JavaScript -->
-                </div>
-                <div class="pdf-instruction">Match each phrase with the correct picture</div>
-            </div>
-        </div>
+        <div class="pdf-instruction">Draw lines to connect each picture with the matching phrase</div>
     </div>
 
     <script>
@@ -553,48 +534,40 @@
 
         // Initialize PDF containers
         function initPDFContainers() {
-            const pdfImagesContainer = document.getElementById('pdf-images-container');
-            const pdfPhrasesContainer = document.getElementById('pdf-phrases-container');
+            const pdfImagesColumn = document.getElementById('pdf-images-column');
+            const pdfPhrasesColumn = document.getElementById('pdf-phrases-column');
             
             // Clear containers
-            pdfImagesContainer.innerHTML = '';
-            pdfPhrasesContainer.innerHTML = '';
+            pdfImagesColumn.innerHTML = '';
+            pdfPhrasesColumn.innerHTML = '';
             
-            // Add images to PDF container
+            // Add images to PDF container in correct order
             gameData.forEach((item, index) => {
-                const pdfItem = document.createElement('div');
-                pdfItem.className = 'pdf-item';
-                
-                const imageWrapper = document.createElement('div');
-                imageWrapper.className = 'pdf-image-item';
+                const pdfImageItem = document.createElement('div');
+                pdfImageItem.className = 'pdf-image-item';
                 
                 const img = document.createElement('img');
                 img.src = item.image;
                 img.alt = `Image ${index+1}`;
                 
                 img.onerror = function() {
-                    this.src = `https://via.placeholder.com/600x600/4CAF50/white?text=Image+${index+1}`;
+                    this.src = `https://via.placeholder.com/400x400/4CAF50/white?text=Image+${index+1}`;
                 };
                 
-                imageWrapper.appendChild(img);
-                pdfItem.appendChild(imageWrapper);
-                pdfImagesContainer.appendChild(pdfItem);
+                pdfImageItem.appendChild(img);
+                pdfImagesColumn.appendChild(pdfImageItem);
             });
             
-            // Add phrases to PDF container
+            // Add phrases to PDF container in correct order
             gameData.forEach((item, index) => {
-                const pdfItem = document.createElement('div');
-                pdfItem.className = 'pdf-item';
-                
-                const phraseWrapper = document.createElement('div');
-                phraseWrapper.className = 'pdf-phrase-item';
+                const pdfPhraseItem = document.createElement('div');
+                pdfPhraseItem.className = 'pdf-phrase-item';
                 
                 const p = document.createElement('p');
                 p.textContent = item.phrase;
                 
-                phraseWrapper.appendChild(p);
-                pdfItem.appendChild(phraseWrapper);
-                pdfPhrasesContainer.appendChild(pdfItem);
+                pdfPhraseItem.appendChild(p);
+                pdfPhrasesColumn.appendChild(pdfPhraseItem);
             });
         }
 
@@ -721,62 +694,56 @@
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             
-            // Show PDF containers
-            document.querySelector('.pdf-container').style.display = 'block';
+            // Show PDF container
+            document.getElementById('pdf-container').style.display = 'block';
             
-            // Create PDF with two pages
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            // Capture first page (images)
-            html2canvas(document.getElementById('pdf-images-page'), {
-                scale: 3, // Higher quality
-                useCORS: true,
-                width: 210, // A4 width in mm
-                height: 297, // A4 height in mm
-                scrollX: 0,
-                scrollY: 0,
-                backgroundColor: '#ffffff'
-            }).then(canvas1 => {
-                const imgData1 = canvas1.toDataURL('image/png', 1.0);
-                
-                // Calculate dimensions to fit on page
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-                
-                // Add first page (images)
-                pdf.addImage(imgData1, 'PNG', 0, 0, pageWidth, pageHeight);
-                
-                // Add new page for phrases
-                pdf.addPage();
-                
-                // Capture second page (phrases)
-                html2canvas(document.getElementById('pdf-phrases-page'), {
-                    scale: 3, // Higher quality
+            // Wait a moment for the PDF container to render
+            setTimeout(() => {
+                // Capture the PDF container
+                html2canvas(document.getElementById('pdf-container'), {
+                    scale: 2,
                     useCORS: true,
                     width: 210, // A4 width in mm
                     height: 297, // A4 height in mm
                     scrollX: 0,
                     scrollY: 0,
                     backgroundColor: '#ffffff'
-                }).then(canvas2 => {
-                    const imgData2 = canvas2.toDataURL('image/png', 1.0);
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
                     
-                    // Add second page (phrases)
-                    pdf.addImage(imgData2, 'PNG', 0, 0, pageWidth, pageHeight);
+                    // Create PDF
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
                     
-                    // Hide PDF containers
-                    document.querySelector('.pdf-container').style.display = 'none';
+                    // Add image to PDF (fill the entire page)
+                    pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+                    
+                    // Hide PDF container
+                    document.getElementById('pdf-container').style.display = 'none';
                     
                     // Save PDF
                     pdf.save('matching-game-worksheet.pdf');
                 }).catch(error => {
-                    console.error('Error capturing phrases page:', error);
-                    document.querySelector('.pdf-container').style.display = 'none';
+                    console.error('Error capturing PDF:', error);
+                    document.getElementById('pdf-container').style.display = 'none';
+                    
+                    // Fallback: try with lower scale
+                    html2canvas(document.getElementById('pdf-container'), {
+                        scale: 1,
+                        useCORS: true,
+                        backgroundColor: '#ffffff'
+                    }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png', 1.0);
+                        const pdf = new jsPDF('p', 'mm', 'a4');
+                        const pageWidth = pdf.internal.pageSize.getWidth();
+                        const pageHeight = pdf.internal.pageSize.getHeight();
+                        
+                        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+                        pdf.save('matching-game-worksheet.pdf');
+                    });
                 });
-            }).catch(error => {
-                console.error('Error capturing images page:', error);
-                document.querySelector('.pdf-container').style.display = 'none';
-            });
+            }, 100);
         }
 
         // Initialize game when page loads
