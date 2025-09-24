@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Pictures and Phrases</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: url('Photos/IMG_20250923_225112_703.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.85);
+            z-index: -1;
+        }
+        
+        h1 {
+            color: #4a4a9c;
+            text-align: center;
+            margin: 20px 0 30px;
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            max-width: 90%;
+        }
+        
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: #333;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+        
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+            width: 95%;
+            max-width: 1200px;
+            margin-bottom: 30px;
+            gap: 30px;
+        }
+        
+        .images-container, .phrases-container {
+            width: 48%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .container-title {
+            font-size: 1.5rem;
+            color: #4a4a9c;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .item {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            min-height: 120px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid transparent;
+        }
+        
+        /* Круглые ячейки для картинок */
+        .image-item {
+            border-radius: 50%; /* Делаем ячейку круглой */
+            width: 180px; /* Фиксированная ширина для круга */
+            height: 180px; /* Фиксированная высота для круга */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto; /* Центрируем круглые ячейки */
+            padding: 10px;
+            overflow: hidden; /* Обрезаем всё, что выходит за круг */
+        }
+        
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-color: #7ed321;
+        }
+        
+        .phrase-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-color: #9b59b6;
+        }
+        
+        .image-item.selected {
+            border-color: #7ed321;
+            box-shadow: 0 0 20px rgba(126, 211, 33, 0.7);
+        }
+        
+        .phrase-item.selected {
+            border-color: #9b59b6;
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.7);
+        }
+        
+        .image-item.correct {
+            border-color: #2ecc71;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.8);
+        }
+        
+        .phrase-item.correct {
+            border-color: #9b59b6;
+            box-shadow: 0 0 25px rgba(155, 89, 182, 0.8);
+        }
+        
+        .image-item.incorrect, .phrase-item.incorrect {
+            border-color: #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.7);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Адаптация картинки под круглую ячейку */
+        .image-item img {
+            width: 100%; /* Заполняем всю круглую ячейку */
+            height: 100%; /* Заполняем всю круглую ячейку */
+            object-fit: cover; /* Обрезаем изображение, чтобы оно заполнило круг */
+            border-radius: 50%; /* Делаем само изображение круглым */
+        }
+        
+        .phrase-item p {
+            font-size: 1.4rem;
+            margin: 0;
+            text-align: center;
+            color: #333;
+            width: 100%;
+            line-height: 1.4;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #8e44ad;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        #pdf-btn {
+            background-color: #e74c3c;
+        }
+        
+        #pdf-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .completion-message {
+            font-size: 2.5rem;
+            color: #2ecc71;
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            font-weight: bold;
+        }
+        
+        /* Стили для печати и экспорта в PDF */
+        @media print {
+            body {
+                width: 210mm; /* Ширина листа А4 */
+                height: 297mm; /* Высота листа А4 */
+                margin: 0; /* Убираем стандартные отступы body */
+                padding: 10mm; /* Внутренние отступы для страницы */
+                box-sizing: border-box;
+                font-size: 14pt; /* Увеличиваем базовый шрифт для лучшей читаемости */
+                background: white !important;
+            }
+            
+            body::before {
+                display: none; /* Скрываем полупрозрачный фон */
+            }
+
+            /* Основной контейнер игры располагаем в две колонки */
+            .game-container {
+                display: block !important; /* Меняем flex на блочный поток */
+                column-count: 2; /* Создаем две колонки */
+                column-gap: 15mm; /* Расстояние между колонками */
+                column-rule: 1px dashed #ccc; /* Необязательно: вертикальная линия-разделитель */
+                width: 100%;
+                page-break-inside: avoid; /* Стараемся не разрывать контейнер на страницы */
+            }
+
+            /* Каждая картинка и фраза должна оставаться цельным блоком */
+            .images-container, .phrases-container {
+                display: block;
+                width: 100%;
+            }
+
+            /* Элементы не должны разрываться между страницами и колонками */
+            .item {
+                break-inside: avoid; /* Важно: предотвращает разрыв элемента */
+                page-break-inside: avoid; /* Старый синтаксис для совместимости */
+                margin-bottom: 5mm;
+            }
+
+            /* Скрываем ненужные для PDF элементы */
+            .controls, h1, .instructions, .completion-message {
+                display: none !important;
+            }
+            
+            /* Для круглых изображений в PDF */
+            .image-item {
+                width: 120px !important;
+                height: 120px !important;
+                margin: 0 auto 10mm !important;
+            }
+            
+            .phrase-item {
+                margin-bottom: 10mm;
+                min-height: auto;
+            }
+        }
+
+        /* Дополнительно: определяем размер страницы для инструментов вроде WeasyPrint */
+        @page {
+            size: A4; /* Устанавливаем размер страницы А4 */
+            margin: 10mm; /* Задаем поля страницы */
+        }
+        
+        /* Адаптивность для планшетов */
+        @media (max-width: 1024px) {
+            .game-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .images-container, .phrases-container {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.4rem;
+            }
+            
+            .phrase-item p {
+                font-size: 1.3rem;
+            }
+            
+            .image-item {
+                width: 160px;
+                height: 160px;
+            }
+        }
+        
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+            
+            .instructions {
+                font-size: 1.1rem;
+            }
+            
+            .item {
+                min-height: 100px;
+                padding: 15px;
+            }
+            
+            .phrase-item p {
+                font-size: 1.2rem;
+            }
+            
+            .image-item {
+                width: 140px;
+                height: 140px;
+            }
+            
+            button {
+                padding: 12px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .completion-message {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* Адаптивность для очень маленьких экранов */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.7rem;
+            }
+            
+            .instructions {
+                font-size: 1rem;
+            }
+            
+            .item {
+                min-height: 90px;
+                padding: 10px;
+            }
+            
+            .phrase-item p {
+                font-size: 1.1rem;
+            }
+            
+            .image-item {
+                width: 120px;
+                height: 120px;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            .completion-message {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    <!-- Подключение библиотек для создания PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>Match Pictures and Phrases!</h1>
+    
+    <div class="instructions">
+        Click on a picture and then click on the matching phrase. If correct, they will stay highlighted. If wrong, they will flash red and reset.
+    </div>
+    
+    <div class="game-container" id="game-container">
+        <div class="images-column">
+            <div class="container-title">Pictures</div>
+            <div class="images-container" id="images-container">
+                <!-- Картинки будут добавлены через JavaScript -->
+            </div>
+        </div>
+        
+        <div class="phrases-column">
+            <div class="container-title">Phrases</div>
+            <div class="phrases-container" id="phrases-container">
+                <!-- Фразы будут добавлены через JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="reset-btn">Start Over</button>
+        <button id="pdf-btn">Save as PDF</button>
+        <button id="print-btn">Print</button>
+    </div>
+    
+    <div class="completion-message" id="completion-message">Excellent! All matches are correct!</div>
+
+    <script>
+        // Данные для игры - картинки в правильном порядке, фразы вразброс
+        const gameData = [
+            { image: 'Photos/Screenshot_20250921_144307_Samsung Internet.jpg', phrase: 'This is my school bag.' },
+            { image: 'Photos/Screenshot_20250921_144316_Samsung Internet.jpg', phrase: 'Is this your pen? No, it isn\'t.' },
+            { image: 'Photos/Screenshot_20250921_144329_Samsung Internet.jpg', phrase: 'Look! This is my pen. It\'s red.' },
+            { image: 'Photos/Screenshot_20250921_144341_Samsung Internet.jpg', phrase: 'Is this your ruler?' },
+            { image: 'Photos/Screenshot_20250921_144352_Samsung Internet.jpg', phrase: 'Yes, it is. It\'s a snake ruler.' },
+            { image: 'Photos/Screenshot_20250921_144405_Samsung Internet.jpg', phrase: 'Is this your rubber?' },
+            { image: 'Photos/Screenshot_20250921_144432_Samsung Internet.jpg', phrase: 'Yes, it is. It\'s a cloud rubber.' },
+            { image: 'Photos/Screenshot_20250921_144443_Samsung Internet.jpg', phrase: 'This is my pencil case.' }
+        ];
+
+        // Переменные состояния игры
+        let selectedImage = null;
+        let selectedPhrase = null;
+        let matchedPairs = [];
+
+        // Инициализация игры
+        function initGame() {
+            const imagesContainer = document.getElementById('images-container');
+            const phrasesContainer = document.getElementById('phrases-container');
+            
+            // Очищаем контейнеры
+            imagesContainer.innerHTML = '';
+            phrasesContainer.innerHTML = '';
+            
+            // Сбрасываем состояние
+            selectedImage = null;
+            selectedPhrase = null;
+            matchedPairs = [];
+            
+            // Скрываем сообщение о завершении
+            document.getElementById('completion-message').style.opacity = '0';
+            
+            // Картинки в правильном порядке
+            gameData.forEach((item, index) => {
+                const imageItem = document.createElement('div');
+                imageItem.className = 'item image-item';
+                imageItem.dataset.index = index;
+                
+                const img = document.createElement('img');
+                // В реальном приложении здесь будет src=item.image
+                // Для демонстрации используем заглушки
+                img.src = `https://via.placeholder.com/300x300/4CAF50/white?text=Image+${index+1}`;
+                img.alt = `Image ${index+1}`;
+                
+                imageItem.appendChild(img);
+                imagesContainer.appendChild(imageItem);
+                
+                // Обработчик клика для картинки
+                imageItem.addEventListener('click', () => handleImageClick(index));
+            });
+            
+            // Фразы в случайном порядке
+            const shuffledPhrases = [...gameData].sort(() => Math.random() - 0.5);
+            
+            shuffledPhrases.forEach((item, index) => {
+                const phraseItem = document.createElement('div');
+                phraseItem.className = 'item phrase-item';
+                phraseItem.dataset.index = index;
+                phraseItem.dataset.originalIndex = gameData.indexOf(item);
+                
+                const p = document.createElement('p');
+                p.textContent = item.phrase;
+                
+                phraseItem.appendChild(p);
+                phrasesContainer.appendChild(phraseItem);
+                
+                // Обработчик клика для фразы
+                phraseItem.addEventListener('click', () => handlePhraseClick(index));
+            });
+        }
+
+        // Обработчик клика по картинке
+        function handleImageClick(index) {
+            // Если игра завершена, игнорируем клики
+            if (matchedPairs.length === gameData.length * 2) return;
+            
+            const imageItems = document.querySelectorAll('.image-item');
+            const clickedItem = imageItems[index];
+            
+            // Если эта картинка уже сопоставлена, игнорируем клик
+            if (matchedPairs.includes(index)) return;
+            
+            // Снимаем выделение с других картинок
+            imageItems.forEach(item => {
+                if (item !== clickedItem && !matchedPairs.includes(parseInt(item.dataset.index))) {
+                    item.classList.remove('selected');
+                }
+            });
+            
+            // Если кликнули на уже выбранную картинку, снимаем выделение
+            if (selectedImage === index) {
+                clickedItem.classList.remove('selected');
+                selectedImage = null;
+            } else {
+                // Выделяем новую картинку
+                clickedItem.classList.add('selected');
+                selectedImage = index;
+                
+                // Если уже выбрана фраза, проверяем соответствие
+                if (selectedPhrase !== null) {
+                    checkMatch();
+                }
+            }
+        }
+
+        // Обработчик клика по фразе
+        function handlePhraseClick(index) {
+            // Если игра завершена, игнорируем клики
+            if (matchedPairs.length === gameData.length * 2) return;
+            
+            const phraseItems = document.querySelectorAll('.phrase-item');
+            const clickedItem = phraseItems[index];
+            
+            // Если эта фраза уже сопоставлена, игнорируем клик
+            if (matchedPairs.includes(index + gameData.length)) return;
+            
+            // Снимаем выделение с других фраз
+            phraseItems.forEach(item => {
+                if (item !== clickedItem && !matchedPairs.includes(parseInt(item.dataset.index) + gameData.length)) {
+                    item.classList.remove('selected');
+                }
+            });
+            
+            // Если кликнули на уже выбранную фразу, снимаем выделение
+            if (selectedPhrase === index) {
+                clickedItem.classList.remove('selected');
+                selectedPhrase = null;
+            } else {
+                // Выделяем новую фразу
+                clickedItem.classList.add('selected');
+                selectedPhrase = index;
+                
+                // Если уже выбрана картинка, проверяем соответствие
+                if (selectedImage !== null) {
+                    checkMatch();
+                }
+            }
+        }
+
+        // Проверка соответствия выбранных картинки и фразы
+        function checkMatch() {
+            const imageItems = document.querySelectorAll('.image-item');
+            const phraseItems = document.querySelectorAll('.phrase-item');
+            
+            const selectedImageItem = imageItems[selectedImage];
+            const selectedPhraseItem = phraseItems[selectedPhrase];
+            
+            // Проверяем, совпадают ли индексы
+            const phraseOriginalIndex = parseInt(selectedPhraseItem.dataset.originalIndex);
+            
+            if (selectedImage === phraseOriginalIndex) {
+                // Правильное сопоставление
+                selectedImageItem.classList.remove('selected');
+                selectedImageItem.classList.add('correct');
+                
+                selectedPhraseItem.classList.remove('selected');
+                selectedPhraseItem.classList.add('correct');
+                
+                // Добавляем в список сопоставленных пар
+                matchedPairs.push(selectedImage, selectedPhrase + gameData.length);
+                
+                // Проверяем, завершена ли игра
+                if (matchedPairs.length === gameData.length * 2) {
+                    setTimeout(() => {
+                        document.getElementById('completion-message').style.opacity = '1';
+                    }, 500);
+                }
+            } else {
+                // Неправильное сопоставление
+                selectedImageItem.classList.add('incorrect');
+                selectedPhraseItem.classList.add('incorrect');
+                
+                // Через секунду сбрасываем выделение
+                setTimeout(() => {
+                    selectedImageItem.classList.remove('selected', 'incorrect');
+                    selectedPhraseItem.classList.remove('selected', 'incorrect');
+                }, 1000);
+            }
+            
+            // Сбрасываем выбранные элементы
+            selectedImage = null;
+            selectedPhrase = null;
+        }
+
+        // Функция для создания PDF 
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            
+            // Сохраняем исходные стили для восстановления после создания PDF
+            const originalStyles = {
+                bodyWidth: document.body.style.width,
+                bodyHeight: document.body.style.height,
+                bodyPadding: document.body.style.padding,
+                bodyBackground: document.body.style.background,
+                gameContainerDisplay: document.getElementById('game-container').style.display,
+                gameContainerColumnCount: document.getElementById('game-container').style.columnCount
+            };
+            
+            // Применяем стили для печати к body
+            document.body.style.width = '210mm';
+            document.body.style.height = 'auto';
+            document.body.style.padding = '10mm';
+            document.body.style.background = 'white';
+            
+            // Применяем стили для печати к игровому контейнеру
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.style.display = 'block';
+            gameContainer.style.columnCount = '2';
+            gameContainer.style.columnGap = '15mm';
+            
+            // Скрываем ненужные элементы
+            document.querySelector('.controls').style.display = 'none';
+            document.querySelector('h1').style.display = 'none';
+            document.querySelector('.instructions').style.display = 'none';
+            document.querySelector('.completion-message').style.display = 'none';
+            
+            // Используем html2canvas для создания изображения элемента 
+            html2canvas(gameContainer, {
+                scale: 2, // Увеличиваем разрешение для лучшего качества 
+                useCORS: true, // Разрешаем загрузку跨域图片 
+                scrollY: -window.scrollY,
+                width: gameContainer.scrollWidth,
+                height: gameContainer.scrollHeight
+            }).then(canvas => {
+                // Восстанавливаем исходные стили
+                document.body.style.width = originalStyles.bodyWidth;
+                document.body.style.height = originalStyles.bodyHeight;
+                document.body.style.padding = originalStyles.bodyPadding;
+                document.body.style.background = originalStyles.bodyBackground;
+                
+                gameContainer.style.display = originalStyles.gameContainerDisplay;
+                gameContainer.style.columnCount = originalStyles.gameContainerColumnCount;
+                
+                // Показываем скрытые элементы
+                document.querySelector('.controls').style.display = 'flex';
+                document.querySelector('h1').style.display = 'block';
+                document.querySelector('.instructions').style.display = 'block';
+                document.querySelector('.completion-message').style.display = 'block';
+                
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 190; // Ширина изображения в PDF
+                const pageHeight = 280; // Высота страницы A4 в мм
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+                
+                // Добавляем первую страницу
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                // Добавляем дополнительные страницы, если содержимое не помещается на одной
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                // Сохраняем PDF
+                pdf.save('matching-game-results.pdf');
+            });
+        }
+
+        // Функция для печати
+        function printPage() {
+            window.print();
+        }
+
+        // Инициализация игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            
+            // Обработчик для кнопки сброса
+            document.getElementById('reset-btn').addEventListener('click', initGame);
+            
+            // Обработчик для кнопки создания PDF
+            document.getElementById('pdf-btn').addEventListener('click', generatePDF);
+            
+            // Обработчик для кнопки печати
+            document.getElementById('print-btn').addEventListener('click', printPage);
+        });
+    </script>
+</body>
+</html>
