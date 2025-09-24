@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Picture Matching Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #4a4a9c;
+            text-align: center;
+            margin: 20px 0 30px;
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            max-width: 90%;
+        }
+        
+        .game-wrapper {
+            width: 95%;
+            max-width: 1200px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        #gameCanvas {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #8e44ad;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        #pdf-btn {
+            background-color: #e74c3c;
+        }
+        
+        #pdf-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .completion-message {
+            font-size: 2.5rem;
+            color: #2ecc71;
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            button {
+                padding: 12px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .completion-message {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+    <!-- Подключение Konva.js через CDN -->
+    <script src="https://unpkg.com/konva@10/konva.min.js"></script>
+</head>
+<body>
+    <h1>Picture Matching Game</h1>
+    
+    <div class="game-wrapper">
+        <div id="gameContainer"></div>
+    </div>
+    
+    <div class="controls">
+        <button id="reset-btn">Start Over</button>
+    </div>
+    
+    <div class="completion-message" id="completion-message">Excellent! All matches are correct!</div>
+
+    <script>
+        // Game data
+        const gameData = [
+            { image: 'https://via.placeholder.com/300x300/4CAF50/white?text=School+Bag', phrase: 'This is my school bag.' },
+            { image: 'https://via.placeholder.com/300x300/2196F3/white?text=Pen+Box', phrase: 'Is this your pen? No, it isn\'t.' },
+            { image: 'https://via.placeholder.com/300x300/FF9800/white?text=Red+Pen', phrase: 'Look! This is my pen. It\'s red.' },
+            { image: 'https://via.placeholder.com/300x300/9C27B0/white?text=Ruler', phrase: 'Is this your ruler?' },
+            { image: 'https://via.placeholder.com/300x300/795548/white?text=Snake+Ruler', phrase: 'Yes, it is. It\'s a snake ruler.' },
+            { image: 'https://via.placeholder.com/300x300/607D8B/white?text=Rubber', phrase: 'Is this your rubber?' },
+            { image: 'https://via.placeholder.com/300x300/00BCD4/white?text=Cloud+Rubber', phrase: 'Yes, it is. It\'s a cloud rubber.' },
+            { image: 'https://via.placeholder.com/300x300/8BC34A/white?text=Pencil+Case', phrase: 'This is my pencil case.' }
+        ];
+
+        // Game variables
+        let stage, layer;
+        let selectedImage = null;
+        let selectedPhrase = null;
+        let matchedPairs = [];
+        let imageElements = [];
+        let phraseElements = [];
+
+        // Initialize the game
+        function initGame() {
+            // Clear previous game
+            if (stage) {
+                stage.destroy();
+            }
+
+            // Reset game state
+            selectedImage = null;
+            selectedPhrase = null;
+            matchedPairs = [];
+            imageElements = [];
+            phraseElements = [];
+            
+            // Hide completion message
+            document.getElementById('completion-message').style.opacity = '0';
+
+            // Create stage
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = '';
+            
+            const width = Math.min(1200, window.innerWidth - 40);
+            const height = 700;
+            
+            stage = new Konva.Stage({
+                container: 'gameContainer',
+                width: width,
+                height: height
+            });
+
+            layer = new Konva.Layer();
+            stage.add(layer);
+
+            // Create images and phrases
+            createGameElements();
+            
+            // Draw everything
+            layer.draw();
+        }
+
+        // Create game elements (images and phrases)
+        function createGameElements() {
+            const circleRadius = 80;
+            const spacing = 50;
+            const startX = 100;
+            const startY = 100;
+            
+            // Create image elements
+            gameData.forEach((item, index) => {
+                const x = startX;
+                const y = startY + index * (circleRadius * 2 + spacing);
+                
+                // Create circle for image
+                const circle = new Konva.Circle({
+                    x: x,
+                    y: y,
+                    radius: circleRadius,
+                    fill: 'white',
+                    stroke: '#4a4a9c',
+                    strokeWidth: 3,
+                    shadowColor: 'black',
+                    shadowBlur: 5,
+                    shadowOpacity: 0.2,
+                    shadowOffset: { x: 2, y: 2 }
+                });
+                
+                // Load image
+                const imageObj = new Image();
+                imageObj.onload = function() {
+                    const konvaImage = new Konva.Image({
+                        x: x - circleRadius,
+                        y: y - circleRadius,
+                        image: imageObj,
+                        width: circleRadius * 2,
+                        height: circleRadius * 2,
+                        cornerRadius: circleRadius,
+                        perfectDrawEnabled: false
+                    });
+                    
+                    layer.add(konvaImage);
+                    layer.draw();
+                };
+                imageObj.src = item.image;
+                
+                circle.on('click', () => handleImageClick(index));
+                
+                imageElements.push({
+                    index: index,
+                    circle: circle,
+                    x: x,
+                    y: y
+                });
+                
+                layer.add(circle);
+            });
+            
+            // Create phrase elements
+            const shuffledPhrases = [...gameData].sort(() => Math.random() - 0.5);
+            
+            shuffledPhrases.forEach((item, index) => {
+                const x = startX + 400;
+                const y = startY + index * (circleRadius * 2 + spacing);
+                
+                // Create rectangle for phrase
+                const rect = new Konva.Rect({
+                    x: x - 150,
+                    y: y - 30,
+                    width: 300,
+                    height: 60,
+                    fill: '#ffb366',
+                    cornerRadius: 15,
+                    stroke: '#9b59b6',
+                    strokeWidth: 2,
+                    shadowColor: 'black',
+                    shadowBlur: 5,
+                    shadowOpacity: 0.2,
+                    shadowOffset: { x: 2, y: 2 }
+                });
+                
+                // Create text for phrase
+                const text = new Konva.Text({
+                    x: x - 140,
+                    y: y - 20,
+                    text: item.phrase,
+                    fontSize: 16,
+                    fontFamily: 'Arial',
+                    fill: '#333',
+                    width: 280,
+                    height: 40,
+                    align: 'center',
+                    verticalAlign: 'middle',
+                    fontStyle: 'bold'
+                });
+                
+                rect.on('click', () => handlePhraseClick(index));
+                text.on('click', () => handlePhraseClick(index));
+                
+                phraseElements.push({
+                    index: index,
+                    rect: rect,
+                    text: text,
+                    originalIndex: gameData.indexOf(item),
+                    x: x,
+                    y: y
+                });
+                
+                layer.add(rect);
+                layer.add(text);
+            });
+        }
+
+        // Handle image click
+        function handleImageClick(index) {
+            if (matchedPairs.length === gameData.length * 2) return;
+            if (matchedPairs.includes(index)) return;
+            
+            // Deselect other images
+            imageElements.forEach(item => {
+                if (item.index !== index && !matchedPairs.includes(item.index)) {
+                    item.circle.stroke('#4a4a9c');
+                    item.circle.strokeWidth(3);
+                }
+            });
+            
+            if (selectedImage === index) {
+                // Deselect if already selected
+                imageElements[index].circle.stroke('#4a4a9c');
+                imageElements[index].circle.strokeWidth(3);
+                selectedImage = null;
+            } else {
+                // Select new image
+                imageElements[index].circle.stroke('#7ed321');
+                imageElements[index].circle.strokeWidth(5);
+                selectedImage = index;
+                
+                if (selectedPhrase !== null) {
+                    checkMatch();
+                }
+            }
+            
+            layer.draw();
+        }
+
+        // Handle phrase click
+        function handlePhraseClick(index) {
+            if (matchedPairs.length === gameData.length * 2) return;
+            if (matchedPairs.includes(index + gameData.length)) return;
+            
+            // Deselect other phrases
+            phraseElements.forEach(item => {
+                if (item.index !== index && !matchedPairs.includes(item.index + gameData.length)) {
+                    item.rect.stroke('#9b59b6');
+                    item.rect.strokeWidth(2);
+                }
+            });
+            
+            if (selectedPhrase === index) {
+                // Deselect if already selected
+                phraseElements[index].rect.stroke('#9b59b6');
+                phraseElements[index].rect.strokeWidth(2);
+                selectedPhrase = null;
+            } else {
+                // Select new phrase
+                phraseElements[index].rect.stroke('#9b59b6');
+                phraseElements[index].rect.strokeWidth(5);
+                selectedPhrase = index;
+                
+                if (selectedImage !== null) {
+                    checkMatch();
+                }
+            }
+            
+            layer.draw();
+        }
+
+        // Check if selected image and phrase match
+        function checkMatch() {
+            const phraseOriginalIndex = phraseElements[selectedPhrase].originalIndex;
+            
+            if (selectedImage === phraseOriginalIndex) {
+                // Correct match - green glow
+                imageElements[selectedImage].circle.stroke('#2ecc71');
+                imageElements[selectedImage].circle.strokeWidth(6);
+                imageElements[selectedImage].circle.shadowColor('#2ecc71');
+                imageElements[selectedImage].circle.shadowBlur(15);
+                
+                phraseElements[selectedPhrase].rect.stroke('#9b59b6');
+                phraseElements[selectedPhrase].rect.strokeWidth(6);
+                phraseElements[selectedPhrase].rect.shadowColor('#9b59b6');
+                phraseElements[selectedPhrase].rect.shadowBlur(15);
+                
+                matchedPairs.push(selectedImage, selectedPhrase + gameData.length);
+                
+                // Check if game completed
+                if (matchedPairs.length === gameData.length * 2) {
+                    setTimeout(() => {
+                        document.getElementById('completion-message').style.opacity = '1';
+                    }, 1000);
+                }
+            } else {
+                // Incorrect match - red flash
+                imageElements[selectedImage].circle.stroke('#e74c3c');
+                phraseElements[selectedPhrase].rect.stroke('#e74c3c');
+                
+                layer.draw();
+                
+                // Reset after delay
+                setTimeout(() => {
+                    imageElements[selectedImage].circle.stroke('#4a4a9c');
+                    imageElements[selectedImage].circle.strokeWidth(3);
+                    imageElements[selectedImage].circle.shadowColor('black');
+                    imageElements[selectedImage].circle.shadowBlur(5);
+                    
+                    phraseElements[selectedPhrase].rect.stroke('#9b59b6');
+                    phraseElements[selectedPhrase].rect.strokeWidth(2);
+                    phraseElements[selectedPhrase].rect.shadowColor('black');
+                    phraseElements[selectedPhrase].rect.shadowBlur(5);
+                    
+                    layer.draw();
+                }, 1000);
+            }
+            
+            selectedImage = null;
+            selectedPhrase = null;
+            layer.draw();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (stage) {
+                const width = Math.min(1200, window.innerWidth - 40);
+                stage.width(width);
+                stage.height(700);
+                stage.draw();
+            }
+        });
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            
+            document.getElementById('reset-btn').addEventListener('click', initGame);
+        });
+    </script>
+</body>
+</html>
