@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Video Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+        }
+
+        body {
+            background: url('Photos/IMG_20250923_225112_703.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 128, 0, 0.3);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 25px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .reveal-image-container {
+            max-width: 500px;
+            margin: 0 auto 30px;
+            position: relative;
+            border: 5px solid #4CAF50;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        .reveal-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #333 0%, #555 100%);
+            transition: height 0.5s ease;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid #4CAF50;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .quiz-elements {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .timer-container, .question-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            border: 3px solid #FF9800;
+        }
+
+        .timer-container video, .question-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .answer-text {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #2E7D32; /* Приятный зеленый для детей */
+            text-shadow: 2px 2px 0px #FFD700, 4px 4px 0px rgba(255, 215, 0, 0.3); /* Золотистое свечение */
+            text-align: center;
+            margin: 25px 0;
+            display: none;
+            padding: 20px 35px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            white-space: pre-line;
+            line-height: 1.4;
+            border: 3px dashed #4CAF50;
+        }
+
+        .controls {
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #4CAF50, #388E3C);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2E7D32;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .reveal-image-container {
+                max-width: 400px;
+            }
+            
+            .quiz-elements {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .timer-container, .question-container {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .answer-text {
+                font-size: 2.2rem;
+                padding: 15px 25px;
+            }
+            
+            button {
+                padding: 12px 30px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .reveal-image-container {
+                max-width: 300px;
+            }
+            
+            .answer-text {
+                font-size: 1.8rem;
+                padding: 12px 20px;
+            }
+            
+            button {
+                padding: 10px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .progress {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="reveal-image-container">
+                <img src="Photos/IMG_20250926_083924_097.jpg" alt="Reveal Image" class="reveal-image">
+                <div class="image-mask" id="imageMask"></div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div class="video-container">
+                <video id="mainVideo" controls>
+                    <!-- Video source will be set by JavaScript -->
+                </video>
+            </div>
+            
+            <div class="quiz-elements">
+                <div class="timer-container">
+                    <video id="timerVideo" loop>
+                        <source src="Photos/1758863126562.mp4" type="video/mp4">
+                    </video>
+                </div>
+                
+                <div class="question-container">
+                    <video id="questionVideo" loop>
+                        <source src="Photos/1758863152266.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            
+            <div class="answer-text" id="answerText"></div>
+            
+            <div class="controls">
+                <button id="resetButton">Reset Activity</button>
+            </div>
+            
+            <div class="progress" id="progressText">Episode 1 of 5</div>
+        </div>
+    </div>
+
+    <script>
+        // Episode data
+        const episodes = [
+            {
+                video: "Photos/InShot_20250926_004003849.mp4",
+                answer: "It's a pencil.",
+                maskHeight: 80
+            },
+            {
+                video: "Photos/InShot_20250926_004152418.mp4",
+                answer: "It's a pencil case.\nIt's a pen.",
+                maskHeight: 60
+            },
+            {
+                video: "Photos/InShot_20250926_004311399.mp4",
+                answer: "It's a ruler.\nIt's a rubber.",
+                maskHeight: 40
+            },
+            {
+                video: "Photos/InShot_20250926_004418326.mp4",
+                answer: "It's a school bag.\nIt's a notebook.",
+                maskHeight: 20
+            },
+            {
+                video: "Photos/InShot_20250926_004552833.mp4",
+                answer: "It's a sharpener.\nIt's a book.",
+                maskHeight: 0
+            }
+        ];
+
+        // DOM elements
+        const mainVideo = document.getElementById('mainVideo');
+        const timerVideo = document.getElementById('timerVideo');
+        const questionVideo = document.getElementById('questionVideo');
+        const timerContainer = document.querySelector('.timer-container');
+        const questionContainer = document.querySelector('.question-container');
+        const answerText = document.getElementById('answerText');
+        const imageMask = document.getElementById('imageMask');
+        const resetButton = document.getElementById('resetButton');
+        const progressText = document.getElementById('progressText');
+
+        // State variables
+        let currentEpisode = 0;
+
+        // Initialize the activity
+        function initActivity() {
+            currentEpisode = 0;
+            updateProgressText();
+            loadEpisode(currentEpisode);
+            hideQuizElements();
+            resetImageMask();
+        }
+
+        // Load a specific episode
+        function loadEpisode(episodeIndex) {
+            if (episodeIndex >= episodes.length) return;
+            
+            const episode = episodes[episodeIndex];
+            mainVideo.src = episode.video;
+            mainVideo.load();
+            
+            // Set up event listener for when the video ends
+            mainVideo.onended = function() {
+                showQuizElements();
+                
+                // Show timer and question for 3 seconds
+                setTimeout(function() {
+                    hideQuizElements();
+                    showAnswer(episode.answer);
+                    
+                    // Show answer for 5 seconds
+                    setTimeout(function() {
+                        hideAnswer();
+                        revealImagePart(episode.maskHeight);
+                        currentEpisode++;
+                        
+                        if (currentEpisode < episodes.length) {
+                            updateProgressText();
+                            loadEpisode(currentEpisode);
+                        } else {
+                            // All episodes completed
+                            progressText.textContent = "Activity Completed!";
+                        }
+                    }, 5000);
+                }, 3000);
+            };
+        }
+
+        // Show timer and question elements
+        function showQuizElements() {
+            timerContainer.style.display = 'block';
+            questionContainer.style.display = 'block';
+            timerVideo.play();
+            questionVideo.play();
+        }
+
+        // Hide timer and question elements
+        function hideQuizElements() {
+            timerContainer.style.display = 'none';
+            questionContainer.style.display = 'none';
+            timerVideo.pause();
+            timerVideo.currentTime = 0;
+            questionVideo.pause();
+            questionVideo.currentTime = 0;
+        }
+
+        // Show the answer text
+        function showAnswer(text) {
+            answerText.textContent = text;
+            answerText.style.display = 'block';
+        }
+
+        // Hide the answer text
+        function hideAnswer() {
+            answerText.style.display = 'none';
+        }
+
+        // Reveal part of the image
+        function revealImagePart(heightPercentage) {
+            imageMask.style.height = `${heightPercentage}%`;
+        }
+
+        // Reset the image mask to fully hidden
+        function resetImageMask() {
+            imageMask.style.height = '100%';
+        }
+
+        // Update the progress text
+        function updateProgressText() {
+            progressText.textContent = `Episode ${currentEpisode + 1} of ${episodes.length}`;
+        }
+
+        // Reset button event listener
+        resetButton.addEventListener('click', function() {
+            mainVideo.pause();
+            hideQuizElements();
+            hideAnswer();
+            initActivity();
+        });
+
+        // Initialize the activity when the page loads
+        window.onload = initActivity;
+    </script>
+</body>
+</html>
