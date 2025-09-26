@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Objects Practice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            background-image: url('Photos/IMG_20250923_225112_703.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 128, 0, 0.3);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-area {
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step-image {
+            max-width: 90%;
+            max-height: 350px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 4px solid #4CAF50;
+        }
+
+        .step-video {
+            max-width: 90%;
+            max-height: 250px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .dialogue-text {
+            font-size: 2.2rem;
+            line-height: 1.4;
+            color: #2d5016;
+            background: linear-gradient(135deg, #f0fff0, #e8f5e8);
+            padding: 25px;
+            border-radius: 20px;
+            margin: 15px 0;
+            white-space: pre-line;
+            box-shadow: 0 10px 30px rgba(0, 100, 0, 0.2);
+            text-shadow: 2px 2px 4px rgba(76, 175, 80, 0.4);
+            border: 3px solid #81c784;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .media-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        button {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.6rem;
+            padding: 16px 32px;
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+            font-weight: 500;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(145deg, #45a049, #4CAF50);
+        }
+
+        .progress {
+            margin-top: 25px;
+            font-size: 1.4rem;
+            color: #2d5016;
+            text-shadow: 1px 1px 2px rgba(0, 128, 0, 0.3);
+            font-weight: 500;
+            background-color: rgba(240, 255, 240, 0.8);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        .progress-container {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .dialogue-text {
+                font-size: 1.8rem;
+                padding: 20px;
+            }
+            
+            button {
+                font-size: 1.4rem;
+                padding: 14px 28px;
+            }
+            
+            .step-image {
+                max-height: 280px;
+            }
+            
+            .step-video {
+                max-height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dialogue-text {
+                font-size: 1.6rem;
+                padding: 15px;
+            }
+            
+            button {
+                font-size: 1.2rem;
+                padding: 12px 24px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .step-image {
+                max-width: 95%;
+                max-height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content-area" id="contentArea">
+            <!-- Content will be dynamically inserted here -->
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress" id="progressText">Step 1 of 9</div>
+        </div>
+        
+        <div class="controls">
+            <button id="resetBtn">Start Over</button>
+        </div>
+    </div>
+
+    <script>
+        const steps = [
+            {
+                image: 'Photos/IMG_20250922_232129_923.jpg',
+                text: 'Is this your...?\nYes, it is.\nNo, it isn\'t.',
+                showVideo: false,
+                duration: 5000
+            },
+            {
+                image: 'Photos/IMG_20250921_234051_721.jpg',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your rubber?\nNo, it isn\'t.\nIs this your notebook?\nYes, it is.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            },
+            {
+                image: 'Photos/IMG_20250921_234022_912.jpg',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your chair?\nNo, it isn\'t.\nIs this your book?\nYes, it is.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            },
+            {
+                image: 'Photos/IMG_20250922_231147_126.jpg',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your notebook?\nNo, it isn\'t.\nIs this your school bag?\nYes, it is.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            },
+            {
+                image: 'Photos/IMG_20250922_231930_289.jpg',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your rubber?\nNo, it isn\'t.\nIs this your pencil case?\nYes, it is.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            },
+            {
+                image: 'Photos/IMG_20250922_232500_968.jpg',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your set of coloured pencils?\nYes, it is.\nIs this your sharpener?\nNo, it isn\'t.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            },
+            {
+                image: 'Photos/IMG_20250922_181513_842.jpg',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your notebook?\nYes, it is.\nIs this your glue stick?\nNo, it isn\'t.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            },
+            {
+                image: 'Photos/1758525643.png',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your pencil?\nYes, it is.\nIs this your school bag?\nNo, it isn\'t.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            },
+            {
+                image: 'Photos/IMG_20250922_231300_669.jpg',
+                video: 'Photos/1758863126562.mp4',
+                text: 'Is this your pencil?\nYes, it is.\nIs this your sharpener?\nNo, it isn\'t.',
+                showVideo: true,
+                videoDuration: 10000,
+                textDuration: 10000
+            }
+        ];
+
+        let currentStep = 0;
+        const contentArea = document.getElementById('contentArea');
+        const resetBtn = document.getElementById('resetBtn');
+        const progressText = document.getElementById('progressText');
+
+        function showStep(stepIndex) {
+            contentArea.innerHTML = '';
+            const step = steps[stepIndex];
+            
+            progressText.textContent = `Step ${stepIndex + 1} of ${steps.length}`;
+            
+            // Show image (will stay for entire step duration)
+            const img = document.createElement('img');
+            img.src = step.image;
+            img.alt = `Step ${stepIndex + 1} image`;
+            img.className = 'step-image';
+            contentArea.appendChild(img);
+            
+            if (step.showVideo) {
+                // Show video immediately with image for 10 seconds
+                const video = document.createElement('video');
+                video.src = step.video;
+                video.className = 'step-video';
+                video.autoplay = true;
+                video.muted = true; // Mute to ensure autoplay works
+                video.playsInline = true; // Important for mobile
+                video.controls = false;
+                video.loop = true;
+                
+                // Preload video to ensure it starts immediately
+                video.preload = "auto";
+                
+                contentArea.appendChild(video);
+                
+                // After 10 seconds, remove video and show text
+                setTimeout(() => {
+                    video.remove();
+                    
+                    // Show text while keeping the same image
+                    const textElement = document.createElement('div');
+                    textElement.className = 'dialogue-text';
+                    textElement.textContent = step.text;
+                    contentArea.appendChild(textElement);
+                    
+                    // Proceed to next step after text duration
+                    setTimeout(() => {
+                        if (currentStep < steps.length - 1) {
+                            currentStep++;
+                            showStep(currentStep);
+                        }
+                    }, step.textDuration);
+                }, step.videoDuration);
+            } else {
+                // For first step without video - show text immediately
+                const textElement = document.createElement('div');
+                textElement.className = 'dialogue-text';
+                textElement.textContent = step.text;
+                contentArea.appendChild(textElement);
+                
+                // Proceed to next step after duration
+                setTimeout(() => {
+                    if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        showStep(currentStep);
+                    }
+                }, step.duration);
+            }
+        }
+
+        // Ensure videos can autoplay
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the first step
+            showStep(currentStep);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            currentStep = 0;
+            showStep(currentStep);
+        });
+    </script>
+</body>
+</html>
